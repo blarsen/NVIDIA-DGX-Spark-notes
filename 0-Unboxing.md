@@ -70,4 +70,26 @@ PORT   STATE SERVICE
 
 So the Spark is fully booted and its SSH server is running, but the setup web page isn't served on the LAN. The sticker URL most likely only works while connected to the Spark's own hotspot. SSH is of no use yet, because a factory-fresh Spark has no user account until first-boot setup creates one. After setup it should be the way to work with the Spark headless.
 
-Next step: shut the Spark down, unplug the Ethernet cable, power it on again and look for the hotspot.
+### Shutting down and starting the hotspot
+
+A short press of the power button did not shut the Spark down. Cool air kept coming from the fan at the front. Holding the button for about three seconds did shut it down.
+
+I unplugged the Ethernet cable and powered it on again. The `sparc-d66c` Wi-Fi network then appeared. So **the hotspot only starts when the Spark boots with no network connected**. With a cable plugged in, you won't get the setup page.
+
+### Reaching the setup page
+
+I joined the hotspot from a laptop running Ubuntu 26.04. A captive portal appeared and showed the setup URL from the sticker. Entering `http://sparc-d66c.local` in the browser opened the setup.
+
+An iPad did not work for this. It kept switching back to its default Wi-Fi network, so the setup page never loaded and just hung on "Loading". If you try it from a phone or tablet, make sure the device stays on the Spark's network. Turning off auto-join for your usual network helps. A laptop avoids the problem.
+
+## First-boot setup
+
+The setup is a sequence of screens:
+
+1. **Welcome:** **Get Started**.
+2. **Language and timezone:** left at the defaults, US - English and Europe/Oslo.
+3. **Terms of Use:** accepted.
+4. **Create account:** username, password and password confirmation. This is the first user on the device.
+5. **Analytics:** two checkboxes, *Analytics and usage data* (checked by default) and *Crash and failure data* (unchecked by default). I unchecked both. The box belongs to my employer, so opting it into data collection isn't my call.
+6. **Wi-Fi:** the screen lists nearby networks. I picked my home network and entered its password, and it joined. The Ethernet cable stays unplugged during setup.
+7. **System updates:** the setup shows "Preparing system updates" and starts downloading. This takes a while.
