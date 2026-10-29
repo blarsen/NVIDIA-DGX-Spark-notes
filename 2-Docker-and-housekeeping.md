@@ -55,6 +55,12 @@ With `nvidia-modprobe` held, `sudo apt upgrade` upgraded 16 packages, installed 
 
 `apt-mark showhold` confirms that `nvidia-modprobe` is held. I rebooted afterwards, to restart the deferred dashboard services and to check the machine comes back cleanly after an upgrade.
 
+After the reboot, `nvidia-smi` and `docker run --rm --gpus all ubuntu nvidia-smi` both still show the GB10 with driver 580.178.04 and CUDA 13.0.
+
+### The OTA check tool
+
+`nvidia-spark-ota-check` compares the installed system with NVIDIA's released OTA updates. Its sub-commands are `is-ota-available`, `torn-score` (how incomplete the current OTA update is, 0 meaning fully applied), `installed-name`, `installed-versions`, `ota-versions` and `summary`. According to its help, `is-ota-available` first updates the tool itself unless the DGX Dashboard is handling automatic updates, so it isn't purely read-only.
+
 ### The desktop environment
 
 I'm leaving the desktop environment installed. It uses little memory, and I may want to try it later.
