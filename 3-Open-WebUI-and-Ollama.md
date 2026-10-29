@@ -165,7 +165,7 @@ docker exec open-webui ollama pull llama3.3:70b
 | Memory used, idle / answering | 4.0 / 54 GiB |
 
 - **Speed:** 4.66 tokens/s matched the prediction of at most 4 to 5 tokens/s. Reading 42 GB per token at that speed is about 196 GB/s, in line with the at least 187 GB/s from the 8b model. Both dense models land at roughly 190 to 200 GB/s, which looks like the practical ceiling for reading weights on this machine.
-- **Memory:** loading cost about 50 GiB, a good deal less than my prediction of 80 to 85 GiB. I had assumed a 40 GiB KV cache at a 131072-token context. Either the context was smaller for this model or the cache works differently than I assumed. I didn't capture `ollama ps` for this run, so this is unexplained.
+- **Memory:** `ollama ps` showed 85 GB at a context of 131072, 100% GPU, matching my prediction of 80 to 85 GB from the model plus a KV cache of about 40 GiB (80 layers, 8 key/value heads, head size 128). But `free` showed used memory rising by only about 50 GiB, and available memory falling from 117 to 66 GiB. So what Ollama reserves is more than what `free` showed at that moment. Possible reasons are that part of the reserved context buffer had not been touched yet, or that some of the memory is counted as cache. I haven't established which.
 - **Usability:** at under 5 tokens/s it is slow for chat, though it works.
 
 ## Summary of the benchmarks
@@ -185,6 +185,6 @@ What I take from it:
 - **Mixture-of-experts models are much faster than their size suggests.** The 120b model, with more than 1.5 times the file size of the 70b, generates about 8 times as fast, because it uses only 5.1B parameters per token. That is what the Spark's large memory is good for: holding a big MoE model that runs at a usable speed.
 - **The context buffer can dominate memory** for small models. The 8b model took 22 GB in `ollama ps` for a 4.9 GB file, because of the 131072-token context.
 - **The cold start is a one-off cost** per model load, and it varies in ways I can't fully explain. Warm starts are quick unless the model thinks first.
-- **Open questions:** the memory use of the 70b, the 120b's 67 GiB, the odd 30 seconds for the 8b cold start, and where the date in the 8b's cutoff claim came from.
+- **Open questions:** why `free` shows less memory used than `ollama ps` reports for the 70b, the 120b's 67 GiB, the odd 30 seconds for the 8b cold start, and where the date in the 8b's cutoff claim came from.
 
 The benchmarks are enough for now. Next I want to compare what the models are good for, and the apps and tooling that work with them.
