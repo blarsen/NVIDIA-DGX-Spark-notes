@@ -68,3 +68,9 @@ Notes on the numbers:
 - **100% GPU** means the whole model runs on the GPU.
 - **Memory:** loading the model took roughly 19 GiB, more than the 13 GB model file. The large context window (131072 tokens) and its KV cache, which holds the conversation so far, probably account for part of that. The 24 GiB page cache is Linux caching the model file, which the kernel gives back when needed.
 - **Measuring:** `watch -n1 free -h` only shows the current value. A baseline before and a reading at the peak, or `vmstat 1` for a scrolling history, work better.
+
+### Warm start
+
+A second prompt, "Show the top 10 countries by population density.", sent while the model was still loaded, started answering after about 7 seconds. So roughly 54 of the first prompt's 61 seconds were spent loading the model.
+
+The remaining wait probably isn't loading. `gpt-oss` is a reasoning model, so it generates thinking tokens before the visible answer. That is a guess, and a "Thought for N seconds" label on the reply in Open WebUI would confirm it.
