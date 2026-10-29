@@ -93,3 +93,18 @@ The setup is a sequence of screens:
 5. **Analytics:** two checkboxes, *Analytics and usage data* (checked by default) and *Crash and failure data* (unchecked by default). I unchecked both. The box belongs to my employer, so opting it into data collection isn't my call.
 6. **Wi-Fi:** the screen lists nearby networks. I picked my home network and entered its password, and it joined. The Ethernet cable stays unplugged during setup.
 7. **System updates:** the setup shows "Preparing system updates" and starts downloading. This takes a while.
+8. **Setup Complete!** The system updates took about 12 minutes over Wi-Fi. **Get Started** then forwards to `build.nvidia.com/spark`, NVIDIA's playbooks site.
+
+When I picked my home network, the Spark shut down its hotspot. My laptop rejoined my normal home Wi-Fi by itself, and the setup page carried on at `http://spark-d66c.local`.
+
+### Logging in over SSH
+
+After setup, `spark-d66c.local` did not resolve from my laptop on the home network, and the Spark wasn't in the router's DHCP list. A scan of the subnet found it:
+
+```
+nmap -p 22 --open 192.168.84.0/24
+```
+
+The Spark was at `192.168.84.74` on Wi-Fi, a different address from the `192.168.84.68` it had on Ethernet during the first boot. SSH login to that address worked.
+
+The address changes as the connection changes, so a DHCP reservation in the router would keep it steady. Why the `.local` name doesn't resolve is still an open question. A router setting that blocks mDNS between devices is one possibility.
