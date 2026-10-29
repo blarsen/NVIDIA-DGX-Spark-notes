@@ -139,6 +139,6 @@ docker exec open-webui ollama pull llama3.1:8b
 | Memory used, idle / answering | 3.8 / 27 GiB |
 
 - **The speed prediction was wrong.** From the `gpt-oss` figures I expected about 20 tokens/s. Reading 4.9 GB per token at 38.2 tokens/s means at least about 187 GB/s of effective bandwidth, well above the 106 to 112 GB/s I had computed for `gpt-oss`.
-- **Memory:** loading cost about 23 GiB for a 4.9 GB model. My explanation is the KV cache. Llama 3.1 8B has 32 layers, 8 key/value heads and a head size of 128, which makes 128 KiB per token, and at a 131072-token context that is 16 GiB. With the model itself that is close to the observed figure. This assumes the context really is 131072, which `ollama ps` should show.
+- **Memory:** loading cost about 23 GiB for a 4.9 GB model. My explanation is the KV cache. Llama 3.1 8B has 32 layers, 8 key/value heads and a head size of 128, which makes 128 KiB per token, and at a 131072-token context that is 16 GiB. With the model itself that is close to the observed figure. `ollama ps` confirmed it: context 131072 and a size of 22 GB for a 4.9 GB model, 100% GPU. Most of the memory goes to the context buffer, not the model, and a shorter context would use far less.
 - **Cold start:** 30 seconds for a small model is odd, since the 120b model took about 19 seconds to load. I don't know why. Setting up the large KV cache may be part of it.
 - **No thinking:** the warm start of 2 seconds shows how much of the `gpt-oss` wait was the model thinking.
