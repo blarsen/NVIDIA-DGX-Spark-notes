@@ -61,6 +61,14 @@ After the reboot, `nvidia-smi` and `docker run --rm --gpus all ubuntu nvidia-smi
 
 `nvidia-spark-ota-check` compares the installed system with NVIDIA's released OTA updates. Its sub-commands are `is-ota-available`, `torn-score` (how incomplete the current OTA update is, 0 meaning fully applied), `installed-name`, `installed-versions`, `ota-versions` and `summary`. According to its help, `is-ota-available` first updates the tool itself unless the DGX Dashboard is handling automatic updates, so it isn't purely read-only.
 
+The tool must run as root, so use `sudo`. These read-only commands gave:
+
+- `installed-name`: **OTA2610**, released 2026-10-15.
+- `torn-score`: **0**, so that update is fully applied.
+- `summary`: all 154 checks pass for OTA2610, including the firmware components `SOCFW`, `EC` and `USBPD`, and the packages `dgx-dashboard` and `nvidia-dgx-telemetry`. Every older OTA release fails on those firmware components, so the firmware matches the current release.
+
+That also answers the earlier question about the ConnectX-7 firmware manager removing its old firmware files during the upgrade: the system is on the current OTA, with nothing left to apply.
+
 ### The desktop environment
 
 I'm leaving the desktop environment installed. It uses little memory, and I may want to try it later.
