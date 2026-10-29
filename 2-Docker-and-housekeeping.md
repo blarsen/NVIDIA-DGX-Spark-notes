@@ -38,4 +38,8 @@ sudo apt-mark hold nvidia-modprobe
 
 ### Telemetry
 
-The `nvidia-dgx-telemetry` package is installed. I unchecked both analytics boxes during setup, so I want to find out what it does and whether it respects that choice.
+The `nvidia-dgx-telemetry` package is installed. I unchecked both analytics boxes during setup, so I wanted to know whether it respects that choice.
+
+`dpkg -L nvidia-dgx-telemetry` shows two systemd services, `nvidia-dgx-telemetry` and `nvidia-dgx-sol` ("Sign of Life Telemetry"), plus a library, two command-line tools and two JSON config files. Neither service is running, and `systemctl is-enabled` reports `disabled` for both. The package's preset would enable them, so something disabled them after install. The setup wizard honouring my opt-out is the likely explanation, but nothing proves it. The config in `/opt/nvidia/dgx-telemetry/TelemetryConfig.json` has no readable endpoints, only `!localized` placeholders.
+
+The upgrade moves the package from 4.11 to 8.13, and package scripts can re-enable services. So the check is repeated after the upgrade, and `sudo systemctl mask nvidia-dgx-telemetry nvidia-dgx-sol` makes it permanent.
