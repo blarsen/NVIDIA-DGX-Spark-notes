@@ -19,3 +19,21 @@ Key facts:
 - [NVIDIA developer forum, DGX Spark / GB10](https://forums.developer.nvidia.com/c/accelerated-computing/dgx-spark-gb10/719): community Q&A, known issues and tips.
 - [llama.cpp](https://github.com/ggml-org/llama.cpp): a widely used engine for running LLMs locally. Useful background for how local inference works.
 - [Hugging Face LLM Course](https://huggingface.co/learn/llm-course): a free introduction to LLM concepts and terminology.
+
+## Unboxing
+
+The box is spartan. It contains:
+
+- The DGX Spark itself, a small unit in a gold finish.
+- A power supply.
+- A support guide sheet.
+- A minimal Quick Start guide.
+
+The rear has a single button, assumed to be power, and these connectors:
+
+- **Four USB-C ports.** The left-most one is the power input, so three remain for peripherals.
+- **HDMI.**
+- **Ethernet.**
+- **Two QSFP ports.** These are the high-speed ConnectX-7 network ports, intended for linking Sparks together or for very fast networking.
+
+The Spark is a complete computer in its own right. A monitor, keyboard and mouse can be plugged in and used directly. I expect to run it mostly headless, so the plan is to connect power and network only and do the setup from another machine.
