@@ -52,3 +52,9 @@ With `nvidia-modprobe` held, `sudo apt upgrade` upgraded 16 packages, installed 
 - **`nvidia-spark-cloud-init`** removed several files from `/etc/cloud/` that the Ubuntu installer had left behind, including the one that disabled cloud-init after the first boot. It is NVIDIA's own package and looks deliberate, but it changes how cloud-init behaves.
 - **The ConnectX-7 firmware manager** removed its old firmware files and flag files while upgrading. I don't yet know whether the Spark fetches and applies new firmware by itself, or whether that is left to NVIDIA's OTA update.
 - A harmless warning came from the old `nvidia-disable-aqc-nic` package: `postrm called with unknown argument 'upgrade'`. dpkg fell back to the new package's script, which worked.
+
+`apt-mark showhold` confirms that `nvidia-modprobe` is held. I rebooted afterwards, to restart the deferred dashboard services and to check the machine comes back cleanly after an upgrade.
+
+### The desktop environment
+
+I'm leaving the desktop environment installed. It uses little memory, and I may want to try it later.
