@@ -142,3 +142,7 @@ docker exec open-webui ollama pull llama3.1:8b
 - **Memory:** loading cost about 23 GiB for a 4.9 GB model. My explanation is the KV cache. Llama 3.1 8B has 32 layers, 8 key/value heads and a head size of 128, which makes 128 KiB per token, and at a 131072-token context that is 16 GiB. With the model itself that is close to the observed figure. `ollama ps` confirmed it: context 131072 and a size of 22 GB for a 4.9 GB model, 100% GPU. Most of the memory goes to the context buffer, not the model, and a shorter context would use far less.
 - **Cold start:** 30 seconds for a small model is odd, since the 120b model took about 19 seconds to load. I don't know why. Setting up the large KV cache may be part of it.
 - **No thinking:** the warm start of 2 seconds shows how much of the `gpt-oss` wait was the model thinking.
+
+### A model that doesn't know its own cutoff
+
+Asked about itself, `llama3.1:8b` claimed "My training data includes information up through October 29, 2026." That is today's date, which can't be right: Meta gives December 2023 as the knowledge cutoff for Llama 3.1. A model's statements about itself are not reliable. My guess is that it saw the current date in its prompt and confused it with its cutoff, since the Llama 3.1 chat template has "Cutting Knowledge Date" and "Today Date" lines. That is not yet verified.
