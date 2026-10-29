@@ -148,3 +148,43 @@ docker exec open-webui ollama pull llama3.1:8b
 Asked about itself, `llama3.1:8b` claimed "My training data includes information up through October 29, 2026." That is today's date, which can't be right: Meta gives December 2023 as the knowledge cutoff for Llama 3.1. A model's statements about itself are not reliable.
 
 My first guess was that the chat template supplies today's date, but `docker exec open-webui ollama show llama3.1:8b --template | grep -i date` shows only "Cutting Knowledge Date: December 2023". So the template tells the model the right cutoff, and the date must have reached it some other way, perhaps through a system prompt in Open WebUI that inserts the current date. Open question.
+
+## A large dense model: llama3.3:70b
+
+The last model was a big dense one, `llama3.3:70b`, to see what a model that reads all of its weights for every token costs. The pull reported 42 GB.
+
+```
+docker exec open-webui ollama pull llama3.3:70b
+```
+
+| Measurement | Result |
+| --- | --- |
+| Model size | 42 GB |
+| Cold: time until the answer started | 70 s |
+| Generation speed | 4.66 tokens/s |
+| Memory used, idle / answering | 4.0 / 54 GiB |
+
+- **Speed:** 4.66 tokens/s matched the prediction of at most 4 to 5 tokens/s. Reading 42 GB per token at that speed is about 196 GB/s, in line with the at least 187 GB/s from the 8b model. Both dense models land at roughly 190 to 200 GB/s, which looks like the practical ceiling for reading weights on this machine.
+- **Memory:** loading cost about 50 GiB, a good deal less than my prediction of 80 to 85 GiB. I had assumed a 40 GiB KV cache at a 131072-token context. Either the context was smaller for this model or the cache works differently than I assumed. I didn't capture `ollama ps` for this run, so this is unexplained.
+- **Usability:** at under 5 tokens/s it is slow for chat, though it works.
+
+## Summary of the benchmarks
+
+All four models were asked the same population question.
+
+| Model | Type | File | Cold start | Warm start | Tokens/s | Memory used (rise) |
+| --- | --- | --- | --- | --- | --- | --- |
+| `gpt-oss:20b` | MoE, reasoning | 13 GB | 61 s | 7 s | 58.6 | 19 GiB |
+| `gpt-oss:120b` | MoE, reasoning | 65 GB | 61 s (42 s thinking) | 9 s | 39.1 | 67 GiB |
+| `llama3.1:8b` | dense | 4.9 GB | 30 s | 2 s | 38.2 | 23 GiB |
+| `llama3.3:70b` | dense | 42 GB | 70 s | not measured | 4.66 | 50 GiB |
+
+What I take from it:
+
+- **Dense models are limited by reading their weights.** The 8b and 70b models both run at about 190 to 200 GB/s of effective bandwidth, so the speed falls in proportion to the file size.
+- **Mixture-of-experts models are much faster than their size suggests.** The 120b model, with more than 1.5 times the file size of the 70b, generates about 8 times as fast, because it uses only 5.1B parameters per token. That is what the Spark's large memory is good for: holding a big MoE model that runs at a usable speed.
+- **The context buffer can dominate memory** for small models. The 8b model took 22 GB in `ollama ps` for a 4.9 GB file, because of the 131072-token context.
+- **The cold start is a one-off cost** per model load, and it varies in ways I can't fully explain. Warm starts are quick unless the model thinks first.
+- **Open questions:** the memory use of the 70b, the 120b's 67 GiB, the odd 30 seconds for the 8b cold start, and where the date in the 8b's cutoff claim came from.
+
+The benchmarks are enough for now. Next I want to compare what the models are good for, and the apps and tooling that work with them.

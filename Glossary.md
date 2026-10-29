@@ -20,6 +20,8 @@ Terms I ran into while setting up local LLMs, explained for a developer who know
 
 **Mixture of experts (MoE).** An architecture where the model contains many specialist sub-networks, the *experts*, and uses only a few of them for each token. Total parameters are what must fit in memory. *Active parameters* are what is actually used per token: 3.6B of 21B for `gpt-oss:20b`, and 5.1B of 117B for `gpt-oss:120b`. That is why a large MoE model can generate faster than its size suggests.
 
+**Dense model.** The opposite of a mixture-of-experts model: every parameter is used for every token. Speed then falls roughly in proportion to the model's size ([3-Open-WebUI-and-Ollama.md](3-Open-WebUI-and-Ollama.md)).
+
 **Reasoning model, thinking tokens.** A model that writes out its reasoning before the final answer. Those tokens cost time, which is why a reply can take several seconds to start. Open WebUI shows it as "Thought for N seconds". `gpt-oss` has three effort levels: low, medium and high.
 
 **Cold start and warm start.** The first request after a model has been unloaded must read the model from disk into memory. Later requests, while it is still loaded, skip that. Ollama unloads an idle model after a timeout, 5 minutes by default.
