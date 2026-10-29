@@ -84,3 +84,20 @@ docker exec open-webui ollama pull gpt-oss:120b
 ```
 
 The pull reported 65 GB, which is about 60 GiB and fits comfortably in the 121 GiB of memory. The download took 17 minutes 30 seconds, about 62 MB/s.
+
+I stopped the 20b model first (`docker exec open-webui ollama stop gpt-oss:20b`), then asked the same population question as before.
+
+| Measurement | gpt-oss:20b | gpt-oss:120b |
+| --- | --- | --- |
+| Model size | 13 GB | 65 GB |
+| Cold: time until the answer started | 61 s | 61 s, of which 42 s thinking |
+| Warm: time until the answer started | 7 s (6 s thinking) | 9 s (6 s thinking) |
+| Generation speed | 58.6 tokens/s | 39.1 tokens/s |
+| Memory used, idle / answering | 2.6 / 22 GiB | 3.9 / 71 GiB |
+
+Notes on the numbers:
+
+- **Memory:** loading the 120b model cost about 67 GiB, against a model size of roughly 60 GiB, so about 7 GiB went to the context and runtime overhead. During the answer `free` showed only 939 MiB free and 50 GiB available, with 51 GiB of page cache. Swap use was 140 KiB.
+- **Cold start:** if the 61 seconds includes the 42 seconds of thinking, as the warm numbers suggest, loading took about 19 seconds, quicker than for the smaller model. The 120b files were probably still in the page cache from the download (85 GiB of cache at the baseline). That is a guess.
+- **Thinking time** is the model's choice, not the hardware's. The bigger model thought much longer about the same question.
+- **Speed:** the model is five times larger on disk but only about a third slower. Both are, I believe, mixture-of-experts models that use only part of their weights per token. I haven't verified that.
