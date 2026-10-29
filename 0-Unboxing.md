@@ -47,17 +47,17 @@ The Spark has no LEDs anywhere. There's no light on the power button or at the E
 The Quick Start guide describes two ways to do the first-boot setup:
 
 - **Desktop setup:** plug in a monitor, keyboard and mouse and run the setup on the Spark itself.
-- **Hotspot setup:** the Spark creates its own Wi-Fi network, and you join it from another device to run the setup. A sticker on the setup guide has the hotspot SSID (`sparc-d66c`), its password and the setup URL (`http://sparc-d66c.local`).
+- **Hotspot setup:** the Spark creates its own Wi-Fi network, and you join it from another device to run the setup. A sticker on the setup guide has the hotspot SSID (`spark-d66c`), its password and the setup URL (`http://spark-d66c.local`).
 
 ### Finding it on the network
 
-Despite the lack of lights, the Spark had booted and picked up an address by DHCP. My router lists it as a client named `sparc-d66c`, here `192.168.84.68`.
+Despite the lack of lights, the Spark had booted and picked up an address by DHCP. My router lists it as a client named `spark-d66c`, here `192.168.84.68`.
 
 The hotspot network wasn't visible, probably because the Spark started with a wired network attached.
 
 Trying the setup page over the LAN failed:
 
-- `http://sparc-d66c.local` didn't resolve.
+- `http://spark-d66c.local` didn't resolve.
 - `http://192.168.84.68/` gave "connection refused".
 
 A full port scan showed only one open port:
@@ -74,11 +74,11 @@ So the Spark is fully booted and its SSH server is running, but the setup web pa
 
 A short press of the power button did not shut the Spark down. Cool air kept coming from the fan at the front. Holding the button for about three seconds did shut it down.
 
-I unplugged the Ethernet cable and powered it on again. The `sparc-d66c` Wi-Fi network then appeared. So **the hotspot only starts when the Spark boots with no network connected**. With a cable plugged in, you won't get the setup page.
+I unplugged the Ethernet cable and powered it on again. The `spark-d66c` Wi-Fi network then appeared. So **the hotspot only starts when the Spark boots with no network connected**. With a cable plugged in, you won't get the setup page.
 
 ### Reaching the setup page
 
-I joined the hotspot from a laptop running Ubuntu 26.04. A captive portal appeared and showed the setup URL from the sticker. Entering `http://sparc-d66c.local` in the browser opened the setup.
+I joined the hotspot from a laptop running Ubuntu 26.04. A captive portal appeared and showed the setup URL from the sticker. Entering `http://spark-d66c.local` in the browser opened the setup.
 
 An iPad did not work for this. It kept switching back to its default Wi-Fi network, so the setup page never loaded and just hung on "Loading". If you try it from a phone or tablet, make sure the device stays on the Spark's network. Turning off auto-join for your usual network helps. A laptop avoids the problem.
 
