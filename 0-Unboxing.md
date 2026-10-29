@@ -55,12 +55,7 @@ Despite the lack of lights, the Spark had booted and picked up an address by DHC
 
 The hotspot network wasn't visible, probably because the Spark started with a wired network attached.
 
-Trying the setup page over the LAN failed:
-
-- `http://spark-d66c.local` didn't resolve.
-- `http://192.168.84.68/` gave "connection refused".
-
-A full port scan showed only one open port:
+Trying the setup page over the LAN at `http://192.168.84.68/` gave "connection refused". A full port scan showed only one open port:
 
 ```
 $ nmap -p- 192.168.84.68
@@ -99,7 +94,7 @@ When I picked my home network, the Spark shut down its hotspot. My laptop rejoin
 
 ### Logging in over SSH
 
-After setup, `spark-d66c.local` did not resolve from my laptop on the home network, and the Spark wasn't in the router's DHCP list. A scan of the subnet found it:
+After setup, the Spark was no longer at the address it had during the first boot, and I couldn't find it in the router's DHCP list. A scan of the subnet found it:
 
 ```
 nmap -p 22 --open 192.168.84.0/24
@@ -107,7 +102,18 @@ nmap -p 22 --open 192.168.84.0/24
 
 The Spark was at `192.168.84.74` on Wi-Fi, a different address from the `192.168.84.68` it had on Ethernet during the first boot. SSH login to that address worked.
 
-The address changes as the connection changes, so a DHCP reservation in the router would keep it steady. Why the `.local` name doesn't resolve is still an open question. A router setting that blocks mDNS between devices is one possibility.
+### Moving to the wired network
+
+The Spark had two addresses, one per interface (`ip -br addr`):
+
+- Ethernet (`enP7s7`): `192.168.84.68`, route metric 100.
+- Wi-Fi (`wlP9s9`): `192.168.84.74`, route metric 600.
+
+Linux uses the lowest metric, so traffic already went over the cable. I turned Wi-Fi off with `nmcli radio wifi off` and reserved `192.168.84.68` for the Ethernet MAC address in the router's DHCP settings. The Spark now has one stable address.
+
+The home network is `192.168.84.0/22`, which covers 192.168.84.0 to 192.168.87.255. The earlier `/24` scan was lucky to find it. Scan the whole `/22` in future.
+
+The `.local` name works too: `ping spark-d66c.local` resolves to `192.168.84.68`. My earlier failures were typos in the hostname.
 
 ## First look at the machine
 
