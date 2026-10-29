@@ -37,3 +37,37 @@ The rear has a single button, assumed to be power, and these connectors:
 - **Two QSFP ports.** These are the high-speed ConnectX-7 network ports, intended for linking Sparks together or for very fast networking.
 
 The Spark is a complete computer in its own right. A monitor, keyboard and mouse can be plugged in and used directly. I expect to run it mostly headless, so the plan is to connect power and network only and do the setup from another machine.
+
+## First power-up
+
+I connected an Ethernet cable and the power supply, then pressed the power button.
+
+The Spark has no LEDs anywhere. There's no light on the power button or at the Ethernet socket, and none on the case. The only sign it's on is a very faint fan noise. Without a monitor you can't tell it's running except by seeing it appear on the network.
+
+The Quick Start guide describes two ways to do the first-boot setup:
+
+- **Desktop setup:** plug in a monitor, keyboard and mouse and run the setup on the Spark itself.
+- **Hotspot setup:** the Spark creates its own Wi-Fi network, and you join it from another device to run the setup. A sticker on the setup guide has the hotspot SSID (`sparc-d66c`), its password and the setup URL (`http://sparc-d66c.local`).
+
+### Finding it on the network
+
+Despite the lack of lights, the Spark had booted and picked up an address by DHCP. My router lists it as a client named `sparc-d66c`, here `192.168.84.68`.
+
+The hotspot network wasn't visible, probably because the Spark started with a wired network attached.
+
+Trying the setup page over the LAN failed:
+
+- `http://sparc-d66c.local` didn't resolve.
+- `http://192.168.84.68/` gave "connection refused".
+
+A full port scan showed only one open port:
+
+```
+$ nmap -p- 192.168.84.68
+PORT   STATE SERVICE
+22/tcp open  ssh
+```
+
+So the Spark is fully booted and its SSH server is running, but the setup web page isn't served on the LAN. The sticker URL most likely only works while connected to the Spark's own hotspot. SSH is of no use yet, because a factory-fresh Spark has no user account until first-boot setup creates one. After setup it should be the way to work with the Spark headless.
+
+Next step: shut the Spark down, unplug the Ethernet cable, power it on again and look for the hotspot.
