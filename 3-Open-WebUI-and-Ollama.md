@@ -74,3 +74,13 @@ Notes on the numbers:
 A second prompt, "Show the top 10 countries by population density.", sent while the model was still loaded, started answering after about 7 seconds. So roughly 54 of the first prompt's 61 seconds were spent loading the model.
 
 The remaining wait wasn't loading. `gpt-oss` is a reasoning model, so it generates thinking tokens before the visible answer, and Open WebUI labelled the reply "Thought for 6 seconds". So about 6 of the 7 seconds were the model thinking.
+
+## A bigger model: gpt-oss:120b
+
+The Spark's main selling point is its memory, so the next test was `gpt-oss:120b`:
+
+```
+docker exec open-webui ollama pull gpt-oss:120b
+```
+
+The pull reported 65 GB, which is about 60 GiB and fits comfortably in the 121 GiB of memory. The download took 17 minutes 30 seconds, about 62 MB/s.
