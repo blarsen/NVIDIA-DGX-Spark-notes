@@ -47,3 +47,24 @@ docker exec open-webui ollama pull gpt-oss:20b
 ```
 
 It was 13 GB and took about 4 minutes over the wired connection. After reloading the web page, `gpt-oss:20b` was selected in the dropdown.
+
+## First conversation
+
+The prompt was "list the top 100 largest countries in the world, by population with population and population density", with `gpt-oss:20b`. The answer looked correct.
+
+| Measurement | Result |
+| --- | --- |
+| Time until the answer started | 61 seconds |
+| Generation speed | 58.6 tokens/s |
+| `ollama ps` | 13 GB, 100% GPU, context 131072 |
+| Memory used, idle | 2.6 GiB |
+| Memory used, answering | 22 GiB (121 GiB total, 99 GiB available) |
+| Page cache | 24 GiB |
+
+Notes on the numbers:
+
+- **The 61-second wait** is probably a cold start: the 13 GB model is read from disk into memory on the first request. `ollama ps` shows when the model will be unloaded again (`UNTIL`). Ollama unloads an idle model after a timeout, 5 minutes by default, so a request after a pause pays the start-up cost again.
+- **Tokens/s** is the generation speed once the answer starts. 58.6 is comfortable to read.
+- **100% GPU** means the whole model runs on the GPU.
+- **Memory:** loading the model took roughly 19 GiB, more than the 13 GB model file. The large context window (131072 tokens) and its KV cache, which holds the conversation so far, probably account for part of that. The 24 GiB page cache is Linux caching the model file, which the kernel gives back when needed.
+- **Measuring:** `watch -n1 free -h` only shows the current value. A baseline before and a reading at the peak, or `vmstat 1` for a scrolling history, work better.
