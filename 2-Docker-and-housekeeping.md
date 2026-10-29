@@ -43,3 +43,12 @@ The `nvidia-dgx-telemetry` package is installed. I unchecked both analytics boxe
 `dpkg -L nvidia-dgx-telemetry` shows two systemd services, `nvidia-dgx-telemetry` and `nvidia-dgx-sol` ("Sign of Life Telemetry"), plus a library, two command-line tools and two JSON config files. Neither service is running, and `systemctl is-enabled` reports `disabled` for both. The package's preset would enable them, so something disabled them after install. The setup wizard honouring my opt-out is the likely explanation, but nothing proves it. The config in `/opt/nvidia/dgx-telemetry/TelemetryConfig.json` has no readable endpoints, only `!localized` placeholders.
 
 The upgrade moves the package from 4.11 to 8.13, and package scripts can re-enable services. So the check is repeated after the upgrade, and `sudo systemctl mask nvidia-dgx-telemetry nvidia-dgx-sol` makes it permanent.
+
+### The upgrade
+
+With `nvidia-modprobe` held, `sudo apt upgrade` upgraded 16 packages, installed one new one (`nvidia-spark-cloud-init`) and kept `nvidia-modprobe` back. No reboot was needed, because the running kernel is current. Restarts of `dgx-dashboard` and `dgx-dashboard-admin` were deferred.
+
+- **Telemetry stayed off.** The new `nvidia-dgx-telemetry` pre-install script printed "Sign of Life service stopped and disabled" and "Telemetry service stopped and disabled". Both services still report `disabled` afterwards, so masking looks unnecessary.
+- **`nvidia-spark-cloud-init`** removed several files from `/etc/cloud/` that the Ubuntu installer had left behind, including the one that disabled cloud-init after the first boot. It is NVIDIA's own package and looks deliberate, but it changes how cloud-init behaves.
+- **The ConnectX-7 firmware manager** removed its old firmware files and flag files while upgrading. I don't yet know whether the Spark fetches and applies new firmware by itself, or whether that is left to NVIDIA's OTA update.
+- A harmless warning came from the old `nvidia-disable-aqc-nic` package: `postrm called with unknown argument 'upgrade'`. dpkg fell back to the new package's script, which worked.
