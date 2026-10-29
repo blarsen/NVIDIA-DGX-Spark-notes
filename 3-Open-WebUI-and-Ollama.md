@@ -118,6 +118,27 @@ The model cards (Ollama's page for `gpt-oss` and the Hugging Face model card) gi
 - Reasoning effort has three levels, low, medium and high, set in the system prompt. The models are licensed under Apache 2.0.
 - NVIDIA's DGX Spark is not what the models were sized for: they are designed to fit in 16 GB and 80 GB of memory respectively. The Spark has room to spare.
 
-A back-of-envelope check on the speed: generating a token means reading the active weights from memory once. For the 120b model that is 5.1B parameters at 4.25 bits, about 2.7 GB per token, and at 39.1 tokens/s that is roughly 106 GB/s. For the 20b model it is 3.6B parameters, about 1.9 GB per token, and at 58.6 tokens/s roughly 112 GB/s. The two figures are close, which suggests that generation speed here is limited by memory bandwidth, not by compute. The calculation ignores the KV cache and the parts of the model that are not quantized, so treat it as an estimate.
+A back-of-envelope check on the speed: generating a token means reading the active weights from memory once. For the 120b model that is 5.1B parameters at 4.25 bits, about 2.7 GB per token, and at 39.1 tokens/s that is roughly 106 GB/s. For the 20b model it is 3.6B parameters, about 1.9 GB per token, and at 58.6 tokens/s roughly 112 GB/s. I first read the closeness of the two figures as a sign that generation is limited by memory bandwidth. The `llama3.1:8b` test below disproves that reading: it reached at least 187 GB/s, so 106 to 112 GB/s is not the ceiling, and the `gpt-oss` models must lose time to something besides reading weights.
 
 Still unexplained: why loading the 120b model took about 67 GiB when the model is about 60 GiB, and why `free` showed only 50 GiB available with 51 GiB of page cache.
+
+## A non-reasoning model: llama3.1:8b
+
+To compare with the reasoning models I tried a dense, non-reasoning one: `llama3.1:8b`. A dense model uses all of its weights for every token. I stopped the previous model first and asked the same population question.
+
+```
+docker exec open-webui ollama pull llama3.1:8b
+```
+
+| Measurement | Result |
+| --- | --- |
+| Model size | 4.9 GB |
+| Cold: time until the answer started | 30 s |
+| Warm: time until the answer started | 2 s |
+| Generation speed | 38.2 tokens/s |
+| Memory used, idle / answering | 3.8 / 27 GiB |
+
+- **The speed prediction was wrong.** From the `gpt-oss` figures I expected about 20 tokens/s. Reading 4.9 GB per token at 38.2 tokens/s means at least about 187 GB/s of effective bandwidth, well above the 106 to 112 GB/s I had computed for `gpt-oss`.
+- **Memory:** loading cost about 23 GiB for a 4.9 GB model. My explanation is the KV cache. Llama 3.1 8B has 32 layers, 8 key/value heads and a head size of 128, which makes 128 KiB per token, and at a 131072-token context that is 16 GiB. With the model itself that is close to the observed figure. This assumes the context really is 131072, which `ollama ps` should show.
+- **Cold start:** 30 seconds for a small model is odd, since the 120b model took about 19 seconds to load. I don't know why. Setting up the large KV cache may be part of it.
+- **No thinking:** the warm start of 2 seconds shows how much of the `gpt-oss` wait was the model thinking.
