@@ -20,7 +20,11 @@ docker run -d -p 8080:8080 --gpus=all \
 - `--gpus=all` gives the container access to the GPU.
 - The two named volumes hold the application data and the downloaded models, so they survive removing and recreating the container.
 
-The script works once. Running it again fails because the container name is taken, so later runs use `docker stop open-webui` and `docker start open-webui`. The container has no restart policy, so it stays stopped after a reboot. `docker update --restart unless-stopped open-webui` changes that.
+The script is for the one-time setup. Running it again fails because the container name is taken, so later runs use `docker stop open-webui` and `docker start open-webui`. The container starts without a restart policy, so it would stay stopped after a reboot. I set one on the existing container:
+
+```
+docker update --restart unless-stopped open-webui
+```
 
 ## Reaching the web UI
 
