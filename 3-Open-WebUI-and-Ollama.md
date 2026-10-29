@@ -73,4 +73,4 @@ Notes on the numbers:
 
 A second prompt, "Show the top 10 countries by population density.", sent while the model was still loaded, started answering after about 7 seconds. So roughly 54 of the first prompt's 61 seconds were spent loading the model.
 
-The remaining wait probably isn't loading. `gpt-oss` is a reasoning model, so it generates thinking tokens before the visible answer. That is a guess, and a "Thought for N seconds" label on the reply in Open WebUI would confirm it.
+The remaining wait wasn't loading. `gpt-oss` is a reasoning model, so it generates thinking tokens before the visible answer, and Open WebUI labelled the reply "Thought for 6 seconds". So about 6 of the 7 seconds were the model thinking.
