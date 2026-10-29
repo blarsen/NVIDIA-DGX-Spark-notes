@@ -108,3 +108,29 @@ nmap -p 22 --open 192.168.84.0/24
 The Spark was at `192.168.84.74` on Wi-Fi, a different address from the `192.168.84.68` it had on Ethernet during the first boot. SSH login to that address worked.
 
 The address changes as the connection changes, so a DHCP reservation in the router would keep it steady. Why the `.local` name doesn't resolve is still an open question. A router setting that blocks mDNS between devices is one possibility.
+
+## First look at the machine
+
+After logging in over SSH, I ran a few commands to see what I have.
+
+**GPU** (`nvidia-smi`):
+
+- The GPU is an **NVIDIA GB10**, driver **580.178.04**, **CUDA 13.0**.
+- It idles at 35 °C, drawing 4 W.
+- GPU memory usage shows "Not Supported". That's expected on this machine. The CPU and GPU share one pool of memory, so there's no separate VRAM to report. For a Java developer, think of it as one big heap that both sides use, with no copying between "host" and "device" memory.
+- The only GPU processes are `Xorg` and `gnome-shell`, using 18 MiB and 6 MiB. DGX OS includes a desktop environment even though I'm using the machine headless.
+
+**OS, kernel and architecture** (`/etc/os-release`, `uname -a`):
+
+- The OS is **Ubuntu 24.04.5 LTS (Noble Numbat)**. This is DGX OS, NVIDIA's customised Ubuntu, so everything Ubuntu applies: `apt`, `systemd` and so on.
+- Kernel `7.0.0-1019-nvidia`, built for **aarch64**. This confirms the Arm CPU: binaries and containers need arm64 builds.
+
+**Memory** (`free -h`):
+
+- **121 GiB** total, with 2.6 GiB used and 119 GiB available.
+- 15 GiB of swap, unused.
+- The Spark is marketed as 128 GB, so why 121 GiB shows up is an open question. Part of the memory may be reserved by firmware or the hardware.
+
+**Disk** (`df -h /`):
+
+- A **3.7 TB** NVMe drive, with 38 GB used and 3.5 TB free.
