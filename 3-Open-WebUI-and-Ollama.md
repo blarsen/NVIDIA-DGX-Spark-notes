@@ -145,4 +145,6 @@ docker exec open-webui ollama pull llama3.1:8b
 
 ### A model that doesn't know its own cutoff
 
-Asked about itself, `llama3.1:8b` claimed "My training data includes information up through October 29, 2026." That is today's date, which can't be right: Meta gives December 2023 as the knowledge cutoff for Llama 3.1. A model's statements about itself are not reliable. My guess is that it saw the current date in its prompt and confused it with its cutoff, since the Llama 3.1 chat template has "Cutting Knowledge Date" and "Today Date" lines. That is not yet verified.
+Asked about itself, `llama3.1:8b` claimed "My training data includes information up through October 29, 2026." That is today's date, which can't be right: Meta gives December 2023 as the knowledge cutoff for Llama 3.1. A model's statements about itself are not reliable.
+
+My first guess was that the chat template supplies today's date, but `docker exec open-webui ollama show llama3.1:8b --template | grep -i date` shows only "Cutting Knowledge Date: December 2023". So the template tells the model the right cutoff, and the date must have reached it some other way, perhaps through a system prompt in Open WebUI that inserts the current date. Open question.
