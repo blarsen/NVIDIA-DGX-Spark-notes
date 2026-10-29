@@ -8,3 +8,5 @@ A log of getting started with an NVIDIA DGX Spark, written by a developer who is
 1. [Remote access](1-Remote-access.md): SSH keys and an alias, for working with the Spark headless.
 2. [Docker and housekeeping](2-Docker-and-housekeeping.md): Docker with GPU access, system updates, telemetry, and the OTA check tool.
 3. [Open WebUI and Ollama](3-Open-WebUI-and-Ollama.md): the first local LLM, using NVIDIA's playbook.
+
+Also: [Glossary](Glossary.md), for the LLM terms used in the notes.

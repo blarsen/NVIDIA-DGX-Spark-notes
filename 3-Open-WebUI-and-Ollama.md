@@ -100,4 +100,23 @@ Notes on the numbers:
 - **Memory:** loading the 120b model cost about 67 GiB, against a model size of roughly 60 GiB, so about 7 GiB went to the context and runtime overhead. During the answer `free` showed only 939 MiB free and 50 GiB available, with 51 GiB of page cache. Swap use was 140 KiB.
 - **Cold start:** if the 61 seconds includes the 42 seconds of thinking, as the warm numbers suggest, loading took about 19 seconds, quicker than for the smaller model. The 120b files were probably still in the page cache from the download (85 GiB of cache at the baseline). That is a guess.
 - **Thinking time** is the model's choice, not the hardware's. The bigger model thought much longer about the same question.
-- **Speed:** the model is five times larger on disk but only about a third slower. Both are, I believe, mixture-of-experts models that use only part of their weights per token. I haven't verified that.
+- **Speed:** the 120b model is five times larger on disk but only about a third slower. Both are mixture-of-experts models, which use only part of their weights for each token (see the next section).
+
+### Checking the facts
+
+The model cards (Ollama's page for `gpt-oss` and the Hugging Face model card) give:
+
+| | gpt-oss:20b | gpt-oss:120b |
+| --- | --- | --- |
+| Total parameters | 21B | 117B |
+| Active parameters per token | 3.6B | 5.1B |
+| File size, per Ollama | 14GB (my pull reported 13 GB) | 65GB |
+| Context window | 128K | 128K |
+
+- Both are mixture-of-experts (MoE) models, with weights quantized to MXFP4 at 4.25 bits per parameter. The expert weights are over 90% of the parameters.
+- Reasoning effort has three levels, low, medium and high, set in the system prompt. The models are licensed under Apache 2.0.
+- NVIDIA's DGX Spark is not what the models were sized for: they are designed to fit in 16 GB and 80 GB of memory respectively. The Spark has room to spare.
+
+A back-of-envelope check on the speed: generating a token means reading the active weights from memory once. For the 120b model that is 5.1B parameters at 4.25 bits, about 2.7 GB per token, and at 39.1 tokens/s that is roughly 106 GB/s. For the 20b model it is 3.6B parameters, about 1.9 GB per token, and at 58.6 tokens/s roughly 112 GB/s. The two figures are close, which suggests that generation speed here is limited by memory bandwidth, not by compute. The calculation ignores the KV cache and the parts of the model that are not quantized, so treat it as an estimate.
+
+Still unexplained: why loading the 120b model took about 67 GiB when the model is about 60 GiB, and why `free` showed only 50 GiB available with 51 GiB of page cache.
