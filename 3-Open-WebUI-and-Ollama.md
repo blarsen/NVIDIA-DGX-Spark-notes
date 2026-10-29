@@ -31,3 +31,19 @@ docker update --restart unless-stopped open-webui
 The playbook only mentions `http://localhost:8080`, which means a browser on the Spark itself. With the Spark running headless, the port is also reachable from my laptop at `http://spark-d66c.local:8080`, which redirects to a login page with a **Get started** button.
 
 The port is open to the whole home network, and the first account to register becomes the administrator, so the admin account should be created straight away. An SSH tunnel (`ssh -L 8080:localhost:8080 spark`) is the alternative that exposes nothing beyond SSH.
+
+## Getting a model
+
+After creating the admin account I landed straight in a chat, but the model dropdown said "No models available" and offered no way to download one, which the playbook says it should. Ollama itself was running inside the container, with an empty model list:
+
+```
+docker exec open-webui ollama list
+```
+
+So I pulled the model from the command line instead:
+
+```
+docker exec open-webui ollama pull gpt-oss:20b
+```
+
+It was 13 GB and took about 4 minutes over the wired connection. After reloading the web page, `gpt-oss:20b` was selected in the dropdown.
