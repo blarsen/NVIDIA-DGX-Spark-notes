@@ -336,3 +336,7 @@ I attached the web page `https://docs.docker.com/desktop/release-notes/` to a ne
 ```
 
 This is not hidden reasoning leaking out. It is the model's visible reply. A tool call is text in a specific format that the application must recognise, and here the model wrapped the JSON in a chatty explanation and listed several calls, so the application did not treat it as a call, nothing was executed, and the text was shown as the answer. The model knew about the tools because tools were offered in this chat. The `gpt-oss` models send their thinking through a separate channel, which appears as "Thought" in the interface.
+
+The chat had been in **Default** function calling, since a new chat starts in the default mode. Switching it to **Legacy** and asking the same question worked: the reply named 4.97.0 and gave three fixes (a spurious Resource Saver error when signing out, slow diagnostics collection when the backend is unresponsive, and reliability of the container exec terminal), described as coming from "the provided context". I did not check them against the page, and which three count as "most important" is the model's choice.
+
+Since a new chat starts in Default mode every time, a model that is weak at tool calling will keep running into this unless the mode is set per model: **Admin Settings** → **Models** → the model's edit page → advanced params → **Function Calling**. That way `llama3.1:8b` can use Legacy while `gpt-oss:20b` uses Native.
