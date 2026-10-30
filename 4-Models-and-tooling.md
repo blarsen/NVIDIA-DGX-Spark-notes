@@ -121,3 +121,11 @@ The reply was "Your favourite colour is teal! I remember!". Two things to note:
 
 - The assistant's "Got it." was written by me, not by the model. The model accepts whatever history it is given as its own past, so an application can edit, summarise or invent earlier turns. Memory features work this way.
 - The prompt was 38 tokens, against 16 for a single short message. Every turn resends and reprocesses the whole conversation, so long chats get slower, until they hit the context limit.
+
+### Why the model promised to remember
+
+The false "I'll remember that" is not lying, since that would need the model to know the truth and intend to deceive. As I understand it, a model's reply is generated, not reported: it produces the most plausible continuation of the conversation, and "I'll remember that" is a very likely answer to "remember that", especially after tuning to be an agreeable assistant.
+
+Whether the promise is true depends on the application, not the model. With a memory feature, the application stores the fact and inserts it into later prompts, so the sentence is true. In a bare API call there is no such layer, so it is false. The model cannot inspect its surroundings unless a system prompt describes them, and its self-descriptions are not consistent: in the very next request it correctly said it was "a new conversation each time".
+
+So what a model says about its own capabilities or history is not a source of facts. What the application actually does is. The same applies to the training cutoff claim earlier.
