@@ -138,3 +138,17 @@ I uploaded `0-Unboxing.md` in an Open WebUI chat with `llama3.1:8b` and asked tw
 - A question the file doesn't answer, about the price of the DGX Spark: "Unfortunately, the provided context does not mention the price of the DGX Spark."
 
 The wording "the provided context" shows the retrieval at work. Open WebUI pasted passages from the file into the prompt together with an instruction to answer from them, and the model reported that the price was not among them. Without that framing, a model asked the price of a DGX Spark would be likely to guess.
+
+### Questions about the whole document
+
+Retrieval pastes only a few chunks of the file into the prompt, so questions about the document as a whole are a weak spot. In the same chat I asked three such questions about `0-Unboxing.md`, which has five `##` sections (Introduction, Unboxing, First power-up, First-boot setup, First look at the machine) plus `###` subsections.
+
+| Question | Answer | Actual |
+| --- | --- | --- |
+| Summarise in five bullet points | Five accurate bullets, all from the Introduction and Unboxing sections | Nothing from the first power-up, the setup, the SSH login or the GPU, about three quarters of the file |
+| How many sections, and their headings? | "5 sections", but listed only 2, and presented lines such as "Key facts" and "The box is spartan." as subheadings | The real subheadings, such as "Finding it on the network", were missing |
+| What is mentioned last? | The plan to do the setup from another machine | That is the end of the Unboxing section. The file ends with the disk figures |
+
+The model only saw the beginning of the file, and its answers presented that part as the whole. Each answer was fluent and nothing in it was false in itself, but it was incomplete in a way the reply did not admit. The answers carry a "1 Source" label that expands to the file name.
+
+One caveat: if the suggested wording of the second question, which listed the real headings, went into the prompt, the "5 sections" may have come from the prompt and not the file.
