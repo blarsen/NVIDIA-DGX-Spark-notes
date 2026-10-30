@@ -349,3 +349,25 @@ The **Integrations** button in a chat offers **Code Interpreter**. In **Admin Se
 - **Code Interpreter** lets the model run code during its answer, see the output and continue, which is the tool-calling loop again.
 
 Both are set to **pyodide**, a Python that runs in the browser as WebAssembly, so the code runs on the laptop in a sandbox, not on the Spark, and cannot see the Spark's files or GPU. The code interpreter template is empty, which means the application's default instructions to the model are used.
+
+### Arithmetic without the interpreter
+
+Language models predict text, so exact computation is a weak spot. I asked `llama3.1:8b` three questions with known answers, which I worked out with Python:
+
+1. What is 48271 × 91837? (4,433,063,827)
+2. What is the sum of all prime numbers below 10,000? (5,736,396)
+3. What is the 100th Fibonacci number, with F(0)=0 and F(1)=1? (354,224,848,179,261,915,075)
+
+With the chat in **Default** function calling, the model answered each one with a function call to a tool that does not exist: `calculate_result` with a numerator and denominator, `list_primes` and `fibonacci`. The Llama template tells a model that has tools to "respond with a JSON for a function call", and the model obeyed even though none of the real tools fit.
+
+In **Legacy** mode, with no interpreter, the answers were:
+
+| Question | Answer | Correct? |
+| --- | --- | --- |
+| 48271 × 91837 | 442,445,178,327 | No, about 100 times too large |
+| Sum of primes below 10,000 | 3,682,918 | No |
+| F(100) | 354224848179261915075 | Yes, exactly |
+
+The Fibonacci number was almost certainly not calculated but recalled, since it appears in a lot of text. Well-known values come out right and anything that needs real computation is made up, with nothing in the answer to signal which is which.
+
+The code interpreter settings can also be set through environment variables such as `CODE_INTERPRETER_ENGINE` and `CODE_INTERPRETER_JUPYTER_URL` (see `config.py`).
