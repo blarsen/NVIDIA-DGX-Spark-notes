@@ -302,3 +302,26 @@ What the three attempts show:
 
 - The 8b model chose a file or knowledge-base tool both times and never `search_web`. The 20b model also tried `search_knowledge_files` first.
 - After an empty result, the 20b model carried on and found the web search, while the 8b model gave up after one step. The difference is largely persistence.
+
+### Fourth attempt: llama3.1:8b with Function Calling set to Legacy
+
+The Function Calling setting offers **Default**, **Native** and **Legacy**. With **Legacy**, the same question to `llama3.1:8b` worked. The interface showed the pipeline stage by stage:
+
+1. **Searching:** the model wrote two search queries, "DGX Spark OTA update October 2026" and "latest DGX Spark update news 2026". This is the query generation prompt found earlier.
+2. **Searched 6 sites:** Open WebUI ran the searches and loaded the pages, and listed the sources.
+3. **Querying:** a second pair of queries, "DGX Spark OTA update 2026" and "latest DGX Spark update 2026-10". I take these to be the retrieval queries used to pick relevant chunks from the loaded pages with the embedding model, which fits the second query-generation flag found in the config.
+4. **The answer**, starting "Based on the provided context", the phrase from the document upload test, so the RAG template is in use.
+
+The answer named the October 2026 Release, announced October 21, 2026, and listed its features and fixed issues, with a note that the context gave no version number. The sources included NVIDIA's release notes and a forum thread on the release. One source was a forum thread about a kernel panic after the update, with a missing initrd for `7.0.0-1019-nvidia`, the kernel this Spark runs. My reboot after the upgrade was fine. The OTA tool's release date for OTA2610 is 2026-10-15, while the answer says October 21, which may be a different event.
+
+In this mode the model does two jobs: it writes queries and summarises what it is given. The application finds, loads, selects and pastes.
+
+### Comparing the modes
+
+| Function calling | Model | Result |
+| --- | --- | --- |
+| Default | `llama3.1:8b` | Chose a knowledge tool, got `[]`, and gave up |
+| Native | `gpt-oss:20b` | Multi-step loop; found and read the right page |
+| Legacy | `llama3.1:8b` | The pipeline did the work; a good, sourced answer |
+
+With native tool calling the model decides what to do and can take several steps, but it must be good at choosing. With the legacy pipeline the application does the same fixed steps every time, which suits a small model but is less flexible: it cannot read one chosen page more closely or follow a link.
