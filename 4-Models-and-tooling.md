@@ -421,3 +421,16 @@ What this shows:
   - The long answer to the conflict says "Java 19 (not yet released) and Java 20 (released)", says virtual threads are "implemented using a library called Cgroups" (cgroups is a Linux kernel feature), and says they support "async/await syntax" (Java has none). None of the answers says that virtual threads became final in Java 21.
   - Confident structure and fluent text do not mean correct content.
 - **Language support is a property of the model.** I believe Meta lists English, German, French, Italian, Portuguese, Hindi, Spanish and Thai as the supported languages for Llama 3.1, which does not include Norwegian. I did not check this.
+
+### A repetition loop
+
+Asked for a cookie recipe, with a Norwegian-only system prompt in place, `llama3.1:8b` got stuck repeating one sentence ("Sørg for at bakkene er godt varme før du serverer dem.") without end. The Norwegian was poor as well: "bakkene" means "the hills", not baking trays.
+
+This is a known failure mode of language models, called a repetition loop. Each token depends on all the text before it, including the model's own, so once a sentence has been repeated, repeating it again becomes the most likely continuation, and every repetition makes the next more likely. Small models, and models working in a language they handle badly, fall into it more easily.
+
+Nothing stops the loop by default: as far as I know the generation limit is unlimited, so it runs until the context window of 131072 tokens is full or the user presses stop. At 40 to 50 tokens/s that would take close to an hour. Remedies, under **Chat Controls** → **Advanced Params** (the names vary between versions):
+
+- **Max Tokens** (`num_predict` in Ollama) puts a ceiling on a reply.
+- **Repeat Penalty** or **Frequency Penalty** discourages repetition.
+- A somewhat higher **Temperature** can break a loop.
+- A model that handles the language better avoids much of the problem.
