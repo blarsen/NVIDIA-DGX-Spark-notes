@@ -291,3 +291,14 @@ The answer named the October 2026 Release and listed its software stack, with th
 The model decided the sequence itself: think, call a tool, read the result, decide the next step. That loop is what people call an *agent*. The 8b model picked a file tool and gave up after the error, while the 20b recovered and carried on. Choosing among several tools is a place where model quality matters.
 
 The release features included "Dynamic Display Reserved Memory". It may relate to the open question of why `free` shows 121 GiB, which I have not checked.
+
+### Third attempt: llama3.1:8b with Function Calling set to Default
+
+I expected **Default** function calling to make the app run the search itself, instead of the model choosing a tool. That expectation was wrong. The setting was already **Default**, and the model still received tools and called one of them, `search_knowledge_bases` (input `query DGX Spark OTA update`, `skip 0`, `count 1`), which returned `[]`. The model then answered: "Based on the provided tool call output, it appears that the output was empty. Unfortunately, I am unable to provide an answer to the user's question."
+
+Open WebUI's documentation mentions a separate **Legacy** function calling mode, which may be the classic pipeline. I have not tried it.
+
+What the three attempts show:
+
+- The 8b model chose a file or knowledge-base tool both times and never `search_web`. The 20b model also tried `search_knowledge_files` first.
+- After an empty result, the 20b model carried on and found the web search, while the 8b model gave up after one step. The difference is largely persistence.
