@@ -234,4 +234,6 @@ docker exec open-webui ollama show llama3.1:8b --template
 - "Cutting Knowledge Date: December 2023" appears only in the tool-calling branch, together with the instruction to answer tool results.
 - The official Llama 3.1 format has a "Today Date" line, which Ollama's template doesn't include.
 
-**Still open:** which default prompt carries the date in an ordinary chat, since all the settings were empty and the chat still knew the date.
+**Hidden requests.** The line `- Today's date is: {{CURRENT_DATE}}.` at `config.py:2399` is not in the chat prompt. It is in `DEFAULT_QUERY_GENERATION_PROMPT_TEMPLATE`, a separate request in which Open WebUI asks the model to read the recent chat history (`{{MESSAGES:END:6}}`, the last six messages) and answer only with JSON such as `{ "queries": ["query1", "query2"] }`. Those queries drive web search and document retrieval. The flags just above it, `ENABLE_TITLE_GENERATION`, `ENABLE_SEARCH_QUERY_GENERATION` and `ENABLE_RETRIEVAL_QUERY_GENERATION`, all default to True. So a chat can involve extra requests to the model besides the visible reply: for titles, and for search or retrieval queries.
+
+**Still open:** how the date reaches the model in an ordinary chat, with no file or search, when all the prompt settings are empty. Two guesses: the browser part of Open WebUI substitutes the date when it builds the request, or a built-in tool returns the current time.
