@@ -147,7 +147,7 @@ docker exec open-webui ollama pull llama3.1:8b
 
 Asked about itself, `llama3.1:8b` claimed "My training data includes information up through October 29, 2026." That is today's date, which can't be right: Meta gives December 2023 as the knowledge cutoff for Llama 3.1. A model's statements about itself are not reliable.
 
-My first guess was that the chat template supplies today's date, but `docker exec open-webui ollama show llama3.1:8b --template | grep -i date` shows only "Cutting Knowledge Date: December 2023". So the template tells the model the right cutoff, and the date must have reached it some other way, perhaps through a system prompt in Open WebUI that inserts the current date. Open question.
+My first guess was that the chat template supplies today's date, but `docker exec open-webui ollama show llama3.1:8b --template | grep -i date` shows only "Cutting Knowledge Date: December 2023". So the template tells the model the right cutoff, and the date must have reached it some other way. The answer is in [4-Models-and-tooling.md](4-Models-and-tooling.md#where-the-date-comes-from): Open WebUI tells the model today's date, and the model mixed that up with its cutoff.
 
 ## A large dense model: llama3.3:70b
 
@@ -185,6 +185,6 @@ What I take from it:
 - **Mixture-of-experts models are much faster than their size suggests.** The 120b model, with more than 1.5 times the file size of the 70b, generates about 8 times as fast, because it uses only 5.1B parameters per token. That is what the Spark's large memory is good for: holding a big MoE model that runs at a usable speed.
 - **The context buffer can dominate memory** for small models. The 8b model took 22 GB in `ollama ps` for a 4.9 GB file, because of the 131072-token context.
 - **The cold start is a one-off cost** per model load, and it varies in ways I can't fully explain. Warm starts are quick unless the model thinks first.
-- **Open questions:** why `free` shows less memory used than `ollama ps` reports for the 70b, the 120b's 67 GiB, the odd 30 seconds for the 8b cold start, and where the date in the 8b's cutoff claim came from.
+- **Open questions:** why `free` shows less memory used than `ollama ps` reports for the 70b, the 120b's 67 GiB, the odd 30 seconds for the 8b cold start.
 
 The benchmarks are enough for now. Next I want to compare what the models are good for, and the apps and tooling that work with them.

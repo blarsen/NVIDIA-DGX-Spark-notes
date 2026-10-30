@@ -88,3 +88,8 @@ Chat products like ChatGPT and Claude feel like one thing. Running models locall
 - Memory across chats, which is stored text inserted into the prompt.
 
 Part of what feels like a model getting smarter in a commercial product is the application layer getting better.
+
+### Where the date comes from
+
+The earlier question of how `llama3.1:8b` came to name today's date as its training cutoff has an answer. Asked "What is today's date?" through the API, with no system prompt, the model says it has no access to the current date. Asked the same in an Open WebUI chat, it answers correctly. So Open WebUI supplies the date, and the model confused it with its cutoff. I haven't looked up exactly how Open WebUI inserts it.
+
