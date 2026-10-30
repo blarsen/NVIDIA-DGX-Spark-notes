@@ -151,4 +151,4 @@ Retrieval pastes only a few chunks of the file into the prompt, so questions abo
 
 The model only saw the beginning of the file, and its answers presented that part as the whole. Each answer was fluent and nothing in it was false in itself, but it was incomplete in a way the reply did not admit. The answers carry a "1 Source" label that expands to the file name.
 
-The prompt for the second question contained only the question itself, so the "5 sections" count came from the retrieved text, not from anything in the prompt. The count is right, but the model could list only two of them.
+The prompt for the second question contained only the question itself, so nothing in it hinted at the count. "5 sections" is correct, but the model listed only two, and where the number came from is unclear. It may be a lucky guess.
