@@ -152,3 +152,45 @@ Retrieval pastes only a few chunks of the file into the prompt, so questions abo
 The model only saw the beginning of the file, and its answers presented that part as the whole. Each answer was fluent and nothing in it was false in itself, but it was incomplete in a way the reply did not admit. The answers carry a "1 Source" label that expands to the file name.
 
 The prompt for the second question contained only the question itself, so nothing in it hinted at the count. "5 sections" is correct, but the model listed only two, and where the number came from is unclear. It may be a lucky guess.
+
+### The retrieval settings
+
+Open WebUI's document settings show how retrieval is set up:
+
+- **Embedding model:** `sentence-transformers/all-MiniLM-L6-v2`, a small model that runs inside the container. The embedding engine is "Default (SentenceTransformers)", and the other choices are Ollama, OpenAI and Azure OpenAI, so the embedding model could be a different one.
+- **Full Context Mode:** a switch that sends the whole document to the model instead of retrieved chunks.
+- **A RAG template:** the instructions wrapped around the retrieved text. The retrieved chunks replace `{{CONTEXT}}`.
+
+<details>
+<summary>The default RAG template</summary>
+
+```
+### Task:
+Respond to the user query using the provided context, incorporating inline citations in the format [id] **only when the <source> tag includes an explicit id attribute** (e.g., <source id="1">).
+
+### Guidelines:
+- If you don't know the answer, clearly state that.
+- If uncertain, ask the user for clarification.
+- Respond in the same language as the user's query.
+- If the context is unreadable or of poor quality, inform the user and provide the best possible answer.
+- If the answer isn't present in the context but you possess the knowledge, explain this to the user and provide the answer using your own understanding.
+- **Only include inline citations using [id] (e.g., [1], [2]) when the <source> tag includes an id attribute.**
+- Do not cite if the <source> tag does not contain an id attribute.
+- Do not use XML tags in your response.
+- Ensure citations are concise and directly related to the information provided.
+
+### Example of Citation:
+If the user asks about a specific topic and the information is found in a source with a provided id attribute, the response should include the citation like in the following example:
+* "According to the study, the proposed method increases efficiency by 20% [1]."
+
+### Output:
+Provide a clear and direct response to the user's query, including inline citations in the format [id] only when the <source> tag with id attribute is present in the context.
+
+<context>
+{{CONTEXT}}
+</context>
+```
+
+</details>
+
+The template explains the earlier behaviour. "If you don't know the answer, clearly state that" is why the price question got an honest answer. Citations are only added when a source carries an `id`, which may be why the answers had no inline citations. One line points the other way: the model may answer from its own knowledge if the document lacks the answer, as long as it says so.
