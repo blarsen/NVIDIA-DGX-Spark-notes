@@ -31,3 +31,12 @@ Terms I ran into while setting up local LLMs, explained for a developer who know
 **Ollama.** A program that downloads models and runs them behind a simple local API.
 
 **Open WebUI.** A browser-based chat interface that can talk to Ollama and other model servers.
+
+**System prompt.** Instructions placed at the start of the conversation that set the model's behaviour, and often give it facts such as the date. The user normally doesn't see it.
+
+**Embedding model.** A separate, small model that turns text into a list of numbers so that texts with similar meaning end up close together. It is not used for chat.
+
+**Retrieval (RAG).** Retrieval-augmented generation: instead of giving the model a whole document, the application finds the chunks relevant to the question, using an embedding model, and pastes only those into the prompt.
+
+**Tools (function calling).** A model that supports tools can answer with a structured request to run a function instead of ordinary text. The application runs the function and sends the result back to the model.
+

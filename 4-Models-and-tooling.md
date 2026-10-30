@@ -66,3 +66,25 @@ java java/ChatClient.java llama3.1:8b $'Repeat this back exactly, including the 
 ```
 
 The reply came back as `"foo" and "bar"` and `OK.` on separate lines, so the quotes and line breaks survived the JSON round trip. The model left out the first line of the prompt, which is the model's behaviour and not a client problem. This run took 0.2 s in total at 49 tokens/s, with the model already loaded.
+
+## What the model does, and what the application adds
+
+Chat products like ChatGPT and Claude feel like one thing. Running models locally separates the two layers.
+
+**The model by itself** takes a sequence of tokens and continues it. Each request is independent:
+
+- It has no memory between requests. The request to the API carries the whole conversation in its `messages` list, and the application resends it every time. The model "remembers" because the history is pasted into each request.
+- It knows nothing after its training cutoff, and does not know the date unless it is told.
+- It cannot read files, browse the web or run code. It can only produce text.
+- A model with the *tools* capability can write a structured request, such as "call `search` with this query". The application has to run it and send the result back as more text.
+
+**The application** (here Open WebUI) adds most of what the commercial products are known for:
+
+- Chat history, accounts, and switching models mid-chat.
+- A *system prompt* that sets behaviour and may include the current date.
+- *Retrieval* from uploaded files: the document is split into chunks, a separate *embedding* model finds the chunks most relevant to the question, and only those are pasted into the prompt.
+- Web search, with the results pasted into the prompt.
+- Running tools and code, and feeding the results back.
+- Memory across chats, which is stored text inserted into the prompt.
+
+Part of what feels like a model getting smarter in a commercial product is the application layer getting better.
