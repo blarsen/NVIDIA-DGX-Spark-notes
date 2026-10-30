@@ -58,3 +58,11 @@ Hello!
 ```
 
 The 4.1 seconds in total is mostly the model being loaded, since the generation speed was 59.55 tokens/s. The key comes from `SPARK_API_KEY` or from the file named in `SPARK_API_KEY_FILE`, and the address can be changed with `SPARK_URL`.
+
+A prompt with quotes and line breaks checks the escaping in both directions:
+
+```
+java java/ChatClient.java llama3.1:8b $'Repeat this back exactly, including the quotes:\n"foo" and "bar"\nthen say OK.'
+```
+
+The reply came back as `"foo" and "bar"` and `OK.` on separate lines, so the quotes and line breaks survived the JSON round trip. The model left out the first line of the prompt, which is the model's behaviour and not a client problem. This run took 0.2 s in total at 49 tokens/s, with the model already loaded.
