@@ -40,3 +40,5 @@ Terms I ran into while setting up local LLMs, explained for a developer who know
 
 **Tools (function calling).** A model that supports tools can answer with a structured request to run a function instead of ordinary text. The application runs the function and sends the result back to the model.
 
+**Agent.** A model used in a loop: it decides on a step, calls a tool, reads the result and decides the next step, until it can answer.
+

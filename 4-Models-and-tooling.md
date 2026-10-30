@@ -277,3 +277,17 @@ Setup in Open WebUI:
 The question was "What is the latest DGX Spark OTA update?" to `llama3.1:8b`, which cannot know the answer, since its training ended in 2023. I confirmed the search prompt. The reply was "Unfortunately, I was unable to find any information on the latest DGX Spark OTA update." The tool call shown was not a web search. Its input was `pattern DGX Spark OTA update` with `case_insensitive true`, which looks like a file search, and its output was `{"error": "No accessible files found"}`.
 
 My reading is that recent Open WebUI versions can let the model choose among several built-in tools (native function calling), and that the small 8b model chose the wrong one. That is an interpretation, not something I have verified.
+
+### Second attempt: gpt-oss:20b
+
+The same question to `gpt-oss:20b` worked. The reply's log showed the model choosing its own steps:
+
+1. `search_knowledge_files`, which found nothing useful.
+2. `search_web` with the query "latest DGX Spark OTA update" and 5 results. Three NVIDIA pages came back, including the DGX Spark release notes and a forum post about the October 2026 release.
+3. `fetch_url` to read a page, followed by 5 seconds of thinking, and then the answer.
+
+The answer named the October 2026 Release and listed its software stack, with the single source `docs.nvidia.com`. The driver (580.178.04) and the kernel (7.0.0-1019) in it match what this Spark runs, and the October 2026 release matches the OTA2610 reported by `nvidia-spark-ota-check`. I did not verify the other versions listed (DGX OS 7.6.0, CUDA 13.0.3 and so on).
+
+The model decided the sequence itself: think, call a tool, read the result, decide the next step. That loop is what people call an *agent*. The 8b model picked a file tool and gave up after the error, while the 20b recovered and carried on. Choosing among several tools is a place where model quality matters.
+
+The release features included "Dynamic Display Reserved Memory". It may relate to the open question of why `free` shows 121 GiB, which I have not checked.
