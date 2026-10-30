@@ -9,5 +9,6 @@ A log of getting started with an NVIDIA DGX Spark, written by a developer who is
 2. [Docker and housekeeping](2-Docker-and-housekeeping.md): Docker with GPU access, system updates, telemetry, and the OTA check tool.
 3. [Open WebUI and Ollama](3-Open-WebUI-and-Ollama.md): the first local LLM, using NVIDIA's playbook.
 4. [Models and tooling](4-Models-and-tooling.md): what the models are good for, and the apps and tools that work with them.
+5. [Model survey](5-Model-survey.md): four more models compared on Java, Norwegian and tool use.
 
 Also: [Glossary](Glossary.md), for the LLM terms used in the notes.
