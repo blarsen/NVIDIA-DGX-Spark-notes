@@ -210,3 +210,28 @@ The summary was still front-loaded: four of the five bullets came from the Intro
 The replies were slower by a couple of seconds, which I did not time. That fits the size of the file, about 9 KB or roughly 2,500 to 3,000 tokens, at the 650 to 1,160 tokens/s prompt processing speed seen earlier.
 
 The trade-off: full context sends the whole file with every message, so it only works while the document is small compared with the context window. For a large collection of documents, retrieval is the only option, with the weaknesses shown above.
+
+## Layers of prompting
+
+Between a chat message and the model there are several layers that add text.
+
+**Open WebUI.** All the prompt settings I could find in the UI were empty (the chat controls, the personal system prompt, the per-model settings and the task prompts under the admin interface settings), so the defaults apply. The defaults are in the application code inside the container:
+
+```
+docker exec open-webui grep -rn "CURRENT_DATE" /app/backend/open_webui --include=*.py
+```
+
+This finds `config.py:2399`, `- Today's date is: {{CURRENT_DATE}}.`, in one of the default prompts, and `utils/task.py`, which substitutes it with `template.replace('{{CURRENT_DATE}}', formatted_date)`. That is plain string replacement, not a template engine.
+
+**Ollama.** Each model has a template that turns the messages into the exact text the model sees. It is written in Go's `text/template` language, since Ollama is written in Go. For `llama3.1:8b`:
+
+```
+docker exec open-webui ollama show llama3.1:8b --template
+```
+
+- `{{ .System }}`, `{{- ... }}` (whitespace trimming), `range`, `if` and `eq` are Go template syntax. `<|start_header_id|>` and similar are special tokens of the Llama 3 chat format that mark who is speaking.
+- A system block is only written when there is a system message or tools. `ollama show llama3.1:8b --system` is empty, so the model has no built-in system prompt.
+- "Cutting Knowledge Date: December 2023" appears only in the tool-calling branch, together with the instruction to answer tool results.
+- The official Llama 3.1 format has a "Today Date" line, which Ollama's template doesn't include.
+
+**Still open:** which default prompt carries the date in an ordinary chat, since all the settings were empty and the chat still knew the date.
