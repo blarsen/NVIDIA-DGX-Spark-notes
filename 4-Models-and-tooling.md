@@ -236,4 +236,14 @@ docker exec open-webui ollama show llama3.1:8b --template
 
 **Hidden requests.** The line `- Today's date is: {{CURRENT_DATE}}.` at `config.py:2399` is not in the chat prompt. It is in `DEFAULT_QUERY_GENERATION_PROMPT_TEMPLATE`, a separate request in which Open WebUI asks the model to read the recent chat history (`{{MESSAGES:END:6}}`, the last six messages) and answer only with JSON such as `{ "queries": ["query1", "query2"] }`. Those queries drive web search and document retrieval. The flags just above it, `ENABLE_TITLE_GENERATION`, `ENABLE_SEARCH_QUERY_GENERATION` and `ENABLE_RETRIEVAL_QUERY_GENERATION`, all default to True. So a chat can involve extra requests to the model besides the visible reply: for titles, and for search or retrieval queries.
 
-**Still open:** how the date reaches the model in an ordinary chat, with no file or search, when all the prompt settings are empty. Two guesses: the browser part of Open WebUI substitutes the date when it builds the request, or a built-in tool returns the current time.
+**Still open:** how the date reaches the model in an ordinary chat, with no file or search, when all the prompt settings are empty. Searching the container found two candidates:
+
+```
+docker exec open-webui grep -rl "CURRENT_DATE" /app/build
+docker exec open-webui grep -rn "current_timestamp\|get_current_time" /app/backend/open_webui --include=*.py
+```
+
+- The compiled front end under `/app/build/_app/...` mentions `CURRENT_DATE`, so the browser side substitutes the variable too.
+- `tools/builtin.py` defines the built-in tools `get_current_timestamp` and `calculate_timestamp`, and `utils/tools.py:697` adds them to the list of built-in functions. A model with the *tools* capability can call them.
+
+Which one supplied the date in my chat is not settled yet.
