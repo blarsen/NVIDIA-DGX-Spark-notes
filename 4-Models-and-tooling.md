@@ -129,3 +129,12 @@ The false "I'll remember that" is not lying, since that would need the model to 
 Whether the promise is true depends on the application, not the model. With a memory feature, the application stores the fact and inserts it into later prompts, so the sentence is true. In a bare API call there is no such layer, so it is false. The model cannot inspect its surroundings unless a system prompt describes them, and its self-descriptions are not consistent: in the very next request it correctly said it was "a new conversation each time".
 
 So what a model says about its own capabilities or history is not a source of facts. What the application actually does is. The same applies to the training cutoff claim earlier.
+
+## Document upload
+
+I uploaded `0-Unboxing.md` in an Open WebUI chat with `llama3.1:8b` and asked two questions:
+
+- "Which USB-C port is the power input?" The answer was "The left-most USB-C port is the power input.", which is what the file says.
+- A question the file doesn't answer, about the price of the DGX Spark: "Unfortunately, the provided context does not mention the price of the DGX Spark."
+
+The wording "the provided context" shows the retrieval at work. Open WebUI pasted passages from the file into the prompt together with an instruction to answer from them, and the model reported that the price was not among them. Without that framing, a model asked the price of a DGX Spark would be likely to guess.
