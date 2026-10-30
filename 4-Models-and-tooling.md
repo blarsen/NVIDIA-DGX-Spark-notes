@@ -325,3 +325,14 @@ In this mode the model does two jobs: it writes queries and summarises what it i
 | Legacy | `llama3.1:8b` | The pipeline did the work; a good, sourced answer |
 
 With native tool calling the model decides what to do and can take several steps, but it must be good at choosing. With the legacy pipeline the application does the same fixed steps every time, which suits a small model but is less flexible: it cannot read one chosen page more closely or follow a link.
+
+### Tool calls written out as text
+
+I attached the web page `https://docs.docker.com/desktop/release-notes/` to a new chat with `llama3.1:8b` and asked for the latest minor release of Docker Desktop and the three most important fixes in it. The reply started sensibly ("Based on the provided context, the latest minor release of Docker Desktop is 4.97.0", which I did not verify), then said the fixes were not in the context and went on to write out tool calls in the message:
+
+```
+{"name": "list_knowledge_bases", "parameters": {"count": 10, "skip": 0}}
+{"name": "search_knowledge_files", "parameters": {"count": 10, "query": "Docker Desktop 4.97.0 fixes", "skip": 0}}
+```
+
+This is not hidden reasoning leaking out. It is the model's visible reply. A tool call is text in a specific format that the application must recognise, and here the model wrapped the JSON in a chatty explanation and listed several calls, so the application did not treat it as a call, nothing was executed, and the text was shown as the answer. The model knew about the tools because tools were offered in this chat. The `gpt-oss` models send their thinking through a separate channel, which appears as "Thought" in the interface.
