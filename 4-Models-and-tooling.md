@@ -194,3 +194,19 @@ Provide a clear and direct response to the user's query, including inline citati
 </details>
 
 The template explains the earlier behaviour. "If you don't know the answer, clearly state that" is why the price question got an honest answer. Citations are only added when a source carries an `id`, which may be why the answers had no inline citations. One line points the other way: the model may answer from its own knowledge if the document lacks the answer, as long as it says so.
+
+### Full Context Mode
+
+I switched on Full Context Mode, uploaded `0-Unboxing.md` again in a new chat and repeated the three whole-document questions with `llama3.1:8b`:
+
+| Question | Retrieval (chunks) | Full context |
+| --- | --- | --- |
+| How many sections, and which? | "5", but listed only 2 | Correct: all five headings, in order |
+| What is mentioned last? | The end of the Unboxing section | The right section, "First look at the machine", and a fair description of it |
+| Summarise in five bullet points | Only the Introduction and Unboxing | Better, with a last bullet covering the setup and SSH |
+
+The summary was still front-loaded: four of the five bullets came from the Introduction and Unboxing, and the more distinctive findings (no LEDs, the hotspot that only starts without a network, the memory results) were missing. A small model summarising a long text may lean on the start, but this single test does not prove that.
+
+The replies were slower by a couple of seconds, which I did not time. That fits the size of the file, about 9 KB or roughly 2,500 to 3,000 tokens, at the 650 to 1,160 tokens/s prompt processing speed seen earlier.
+
+The trade-off: full context sends the whole file with every message, so it only works while the document is small compared with the context window. For a large collection of documents, retrieval is the only option, with the weaknesses shown above.
