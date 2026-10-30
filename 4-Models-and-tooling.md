@@ -261,3 +261,19 @@ So the model asked for the date itself, and the answer, "Today's date is October
 4. The model writes the final reply from the result.
 
 One chat question therefore became two model calls with a function run in between. The API request from my Java client offers no tools, which is why it answered that it could not know the date.
+
+## Web search
+
+I set up web search with the DuckDuckGo option (DDGS), which ships inside Open WebUI and needs no API key. Its **Auto (Random)** backend chooses between providers such as Bing, Brave, Google and Yahoo, so queries may go to any of them, from my home connection. The model writes the queries from the chat, so they can contain what I typed.
+
+Setup in Open WebUI:
+
+1. **Admin Settings** → **Web Search**: switch web search on, choose **DDGS** as the engine and leave the backend on Auto. I also switched on **Web Search Confirmation**, which asks before each search.
+2. **Admin Settings** → **Models**: under the model's **Capabilities**, enable **Web Search**. This was needed before the option appeared in a chat.
+3. In a new chat, **Web Search** is under the **Integrations** button next to the **+** button.
+
+### First attempt
+
+The question was "What is the latest DGX Spark OTA update?" to `llama3.1:8b`, which cannot know the answer, since its training ended in 2023. I confirmed the search prompt. The reply was "Unfortunately, I was unable to find any information on the latest DGX Spark OTA update." The tool call shown was not a web search. Its input was `pattern DGX Spark OTA update` with `case_insensitive true`, which looks like a file search, and its output was `{"error": "No accessible files found"}`.
+
+My reading is that recent Open WebUI versions can let the model choose among several built-in tools (native function calling), and that the small 8b model chose the wrong one. That is an interpretation, not something I have verified.
