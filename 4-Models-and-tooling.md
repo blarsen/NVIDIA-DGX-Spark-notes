@@ -93,3 +93,31 @@ Part of what feels like a model getting smarter in a commercial product is the a
 
 The earlier question of how `llama3.1:8b` came to name today's date as its training cutoff has an answer. Asked "What is today's date?" through the API, with no system prompt, the model says it has no access to the current date. Asked the same in an Open WebUI chat, it answers correctly. So Open WebUI supplies the date, and the model confused it with its cutoff. I haven't looked up exactly how Open WebUI inserts it.
 
+
+### Experiment: the model has no memory
+
+Two separate requests with `llama3.1:8b`:
+
+```
+java java/ChatClient.java llama3.1:8b "My favourite colour is teal. Remember that."
+java java/ChatClient.java llama3.1:8b "What is my favourite colour?"
+```
+
+The first reply was "I'll remember that your favourite colour is teal.", which is a promise the model cannot keep. The second reply said it has no information about my preferences and that it is "a new conversation each time".
+
+Then one request that carries the earlier exchange in `messages`:
+
+```
+curl -s http://spark-d66c.local:8080/api/chat/completions \
+  -H "Authorization: Bearer $(cat $SPARK_API_KEY_FILE)" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"llama3.1:8b","messages":[
+        {"role":"user","content":"My favourite colour is teal. Remember that."},
+        {"role":"assistant","content":"Got it."},
+        {"role":"user","content":"What is my favourite colour?"}]}'
+```
+
+The reply was "Your favourite colour is teal! I remember!". Two things to note:
+
+- The assistant's "Got it." was written by me, not by the model. The model accepts whatever history it is given as its own past, so an application can edit, summarise or invent earlier turns. Memory features work this way.
+- The prompt was 38 tokens, against 16 for a single short message. Every turn resends and reprocesses the whole conversation, so long chats get slower, until they hit the context limit.
