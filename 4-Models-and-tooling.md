@@ -381,4 +381,19 @@ It reached them in two different ways:
 - **Questions 2 and 3:** it called `execute_code`, and the answer came from the interpreter's output.
 - **Question 1:** it said "We can do mental multiplication or use Python", chose to compute by hand and thought for 6 seconds. It split 91837 into 90000 + 1837, then 1837 into 1800 + 37, multiplied the parts, added them and checked the result against a rough estimate. The notes were messy and partly garbled by formatting (`480009 = 432,000` means 48000 × 9), but the answer was right.
 
-This is what thinking tokens are good for: a scratchpad. The 8b model had to produce the answer in one pass and failed, while writing the intermediate steps lets a reasoning model do arithmetic it could not do in one go. The choice between running code and calculating by hand is the model's own, and the hand route gets less reliable as the numbers grow.
+This is what thinking tokens are good for: a scratchpad. The 8b model had to produce the answer in one pass and failed, while writing the intermediate steps lets a reasoning model do arithmetic it could not do in one go. The choice between running code and calculating by hand is the model's own.
+
+### Twelve-digit multiplication
+
+To see where calculating by hand breaks down, I asked `gpt-oss:20b` (Native function calling) for 738294816513 × 906183726455 (the first attempt, with different numbers, was spoiled: the model had already computed the answer with the interpreter earlier in the same chat, so it could simply reuse it from the conversation history, which is resent with every message). I changed the numbers to 738294816513 × 906183726455 in a clean comparison. The correct product is 669030748050160808951415, which I checked independently with Python.
+
+| | Interpreter off | Interpreter on |
+| --- | --- | --- |
+| Answer | 669030748050160808951415 | 669030748050160808951415 |
+| Method | 30 seconds of thinking | `execute_code` with `print(a*b)` |
+| Correct | Yes | Yes |
+
+My expectation that the hand route would probably fail at this size was wrong. In its notes the model split the first factor into 738,294,816,000 + 513, built the partial products from simple multiples, added them, and then added the large numbers in groups of three digits with carries. It started down a wrong path once ("Wait aligning") and corrected itself.
+
+So the interpreter was not needed for a correct answer here, at least in this one trial. What it adds is that the answer can be checked: the code and its output are short and readable, while checking the hand route means redoing the calculation yourself. The hand route also took 30 seconds against almost none.
+
