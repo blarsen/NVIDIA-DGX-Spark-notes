@@ -39,3 +39,22 @@ curl http://spark-d66c.local:8080/api/chat/completions \
 The response is JSON in OpenAI's format, with the answer in `choices[0].message.content` ("Hello, how are you today?"). Besides the usual token counts, `usage` includes Ollama's timings: 16 prompt tokens processed at 649 tokens/s, 8 tokens generated at 50 tokens/s, 189 ms in total, and a load time of about 1 ms, so the model was already loaded.
 
 The generation speed here, 50 tokens/s, is higher than the 38.2 measured earlier. With only 8 tokens generated, the sample is too small to compare.
+
+## A Java client
+
+[`java/ChatClient.java`](java/ChatClient.java) sends a chat request from Java, using only the JDK's `HttpClient` (JDK 25, run directly as a source file, with no build step). The JDK has no JSON parser, so a few small methods pick out the fields needed by hand. That is enough for a demo, and a real project should use a JSON library such as Jackson.
+
+```
+export SPARK_API_KEY_FILE=~/.config/spark-apikey.secret
+java java/ChatClient.java llama3.1:8b "Say hello in one sentence."
+```
+
+The answer goes to stdout and a line of statistics to stderr:
+
+```
+Hello!
+
+[3 tokens, 59.55 tokens/s, 4.1 s in total]
+```
+
+The 4.1 seconds in total is mostly the model being loaded, since the generation speed was 59.55 tokens/s. The key comes from `SPARK_API_KEY` or from the file named in `SPARK_API_KEY_FILE`, and the address can be changed with `SPARK_URL`.
