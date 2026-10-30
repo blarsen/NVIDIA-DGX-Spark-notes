@@ -371,3 +371,14 @@ In **Legacy** mode, with no interpreter, the answers were:
 The Fibonacci number was almost certainly not calculated but recalled, since it appears in a lot of text. Well-known values come out right and anything that needs real computation is made up, with nothing in the answer to signal which is which.
 
 The code interpreter settings can also be set through environment variables such as `CODE_INTERPRETER_ENGINE` and `CODE_INTERPRETER_JUPYTER_URL` (see `config.py`).
+
+### Arithmetic with the code interpreter
+
+With **Code Interpreter** switched on in the chat and Function Calling set to **Native**, `gpt-oss:20b` got all three questions right: 4433063827, 5736396 and 354224848179261915075.
+
+It reached them in two different ways:
+
+- **Questions 2 and 3:** it called `execute_code`, and the answer came from the interpreter's output.
+- **Question 1:** it said "We can do mental multiplication or use Python", chose to compute by hand and thought for 6 seconds. It split 91837 into 90000 + 1837, then 1837 into 1800 + 37, multiplied the parts, added them and checked the result against a rough estimate. The notes were messy and partly garbled by formatting (`480009 = 432,000` means 48000 × 9), but the answer was right.
+
+This is what thinking tokens are good for: a scratchpad. The 8b model had to produce the answer in one pass and failed, while writing the intermediate steps lets a reasoning model do arithmetic it could not do in one go. The choice between running code and calculating by hand is the model's own, and the hand route gets less reliable as the numbers grow.
