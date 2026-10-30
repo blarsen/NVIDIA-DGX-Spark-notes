@@ -397,3 +397,27 @@ My expectation that the hand route would probably fail at this size was wrong. I
 
 So the interpreter was not needed for a correct answer here, at least in this one trial. What it adds is that the answer can be checked: the code and its output are short and readable, while checking the hand route means redoing the calculation yourself. The hand route also took 30 seconds against almost none.
 
+
+## System prompts
+
+A system prompt is an ordinary message with the role `system` at the start of the conversation. In Open WebUI it can be set for a single chat in **Chat Controls** → **System Prompt**, or for a model in **Admin Settings** → **Models**.
+
+I asked `llama3.1:8b` (Legacy function calling) "Explain what a Java virtual thread is." with different system prompts:
+
+| System prompt | Result |
+| --- | --- |
+| None | A long structured article with headings, bullet lists and example code |
+| `Answer in at most two sentences.` | Two sentences: a lightweight thread on the JVM without the cost of a native thread, part of Project Loom |
+| `You are a grumpy senior engineer who has seen it all. Keep answers short.` | A short, sighing answer in character |
+| `Answer only in Norwegian.` | Norwegian, but poor (for example "De lar deg å"), with a long answer |
+| Two-sentence prompt, then "Explain in detail, with at least ten bullet points" | The user message won; a long answer |
+
+What this shows:
+
+- **A system prompt shapes style, length, persona and language.** It is a behaviour change by instruction alone.
+- **The user's message overrode the system prompt.** For this model the system prompt is not a hard rule. I believe commercial models are trained to rank system instructions above the user's more strictly, but I have not verified that.
+- **The shortest answer was the most accurate.** The two-sentence answer is correct. The long answers contain errors, which I checked against my own knowledge of Java:
+  - The no-prompt example extends `Thread` and calls `start()`, which creates a platform thread. Virtual threads are created with `Thread.ofVirtual()` or `Executors.newVirtualThreadPerTaskExecutor()`.
+  - The long answer to the conflict says "Java 19 (not yet released) and Java 20 (released)", says virtual threads are "implemented using a library called Cgroups" (cgroups is a Linux kernel feature), and says they support "async/await syntax" (Java has none). None of the answers says that virtual threads became final in Java 21.
+  - Confident structure and fluent text do not mean correct content.
+- **Language support is a property of the model.** I believe Meta lists English, German, French, Italian, Portuguese, Hindi, Spanish and Thai as the supported languages for Llama 3.1, which does not include Norwegian. I did not check this.
