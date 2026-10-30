@@ -385,7 +385,7 @@ This is what thinking tokens are good for: a scratchpad. The 8b model had to pro
 
 ### Twelve-digit multiplication
 
-To see where calculating by hand breaks down, I asked `gpt-oss:20b` (Native function calling) for 738294816513 × 906183726455 (the first attempt, with different numbers, was spoiled: the model had already computed the answer with the interpreter earlier in the same chat, so it could simply reuse it from the conversation history, which is resent with every message). I changed the numbers to 738294816513 × 906183726455 in a clean comparison. The correct product is 669030748050160808951415, which I checked independently with Python.
+To see where calculating by hand breaks down, I asked `gpt-oss:20b` (Native function calling) for 738291846513 × 906182736455. That first attempt was spoiled: I ran the interpreter version first, so in the next message the model could simply reuse the answer from earlier in the same chat, because the conversation history is resent with every message. I then changed the numbers to 738294816513 × 906183726455 and ran the version without the interpreter first. The correct product of the new numbers is 669030748050160808951415, which I checked independently with Python.
 
 | | Interpreter off | Interpreter on |
 | --- | --- | --- |
