@@ -91,7 +91,7 @@ Part of what feels like a model getting smarter in a commercial product is the a
 
 ### Where the date comes from
 
-The earlier question of how `llama3.1:8b` came to name today's date as its training cutoff has an answer. Asked "What is today's date?" through the API, with no system prompt, the model says it has no access to the current date. Asked the same in an Open WebUI chat, it answers correctly. So Open WebUI supplies the date, and the model confused it with its cutoff. I haven't looked up exactly how Open WebUI inserts it.
+The earlier question of how `llama3.1:8b` came to name today's date as its training cutoff has an answer. Asked "What is today's date?" through the API, with no system prompt, the model says it has no access to the current date. Asked the same in an Open WebUI chat, it answers correctly. So Open WebUI supplies the date, and the model confused it with its cutoff. How it supplies it is described under "Layers of prompting": the model calls a built-in tool.
 
 
 ### Experiment: the model has no memory
@@ -236,14 +236,28 @@ docker exec open-webui ollama show llama3.1:8b --template
 
 **Hidden requests.** The line `- Today's date is: {{CURRENT_DATE}}.` at `config.py:2399` is not in the chat prompt. It is in `DEFAULT_QUERY_GENERATION_PROMPT_TEMPLATE`, a separate request in which Open WebUI asks the model to read the recent chat history (`{{MESSAGES:END:6}}`, the last six messages) and answer only with JSON such as `{ "queries": ["query1", "query2"] }`. Those queries drive web search and document retrieval. The flags just above it, `ENABLE_TITLE_GENERATION`, `ENABLE_SEARCH_QUERY_GENERATION` and `ENABLE_RETRIEVAL_QUERY_GENERATION`, all default to True. So a chat can involve extra requests to the model besides the visible reply: for titles, and for search or retrieval queries.
 
-**Still open:** how the date reaches the model in an ordinary chat, with no file or search, when all the prompt settings are empty. Searching the container found two candidates:
+**The date comes from a tool call.** The date reached the model in an ordinary chat, with all the prompt settings empty, in the following way. Searching the container found the built-in tools `get_current_timestamp` and `calculate_timestamp` in `tools/builtin.py`, added to the available functions in `utils/tools.py:697`:
 
 ```
-docker exec open-webui grep -rl "CURRENT_DATE" /app/build
 docker exec open-webui grep -rn "current_timestamp\|get_current_time" /app/backend/open_webui --include=*.py
 ```
 
-- The compiled front end under `/app/build/_app/...` mentions `CURRENT_DATE`, so the browser side substitutes the variable too.
-- `tools/builtin.py` defines the built-in tools `get_current_timestamp` and `calculate_timestamp`, and `utils/tools.py:697` adds them to the list of built-in functions. A model with the *tools* capability can call them.
+The reply to "What is today's date?" in the chat then showed the call: a collapsible "View Result from get_current_timestamp" above the answer, with this output.
 
-Which one supplied the date in my chat is not settled yet.
+```
+{
+  "current_timestamp": 1793339644,
+  "current_iso": "2026-10-30T05:54:04.045236+00:00",
+  "user_local_iso": "2026-10-30T06:54:04.045236+01:00",
+  "user_timezone": "Europe/Oslo"
+}
+```
+
+So the model asked for the date itself, and the answer, "Today's date is October 30th, 2026.", came from the result. This is tool calling in miniature, and it happened with no setup on my part:
+
+1. Open WebUI sends the question to the model together with the available tools.
+2. The model answers with a structured call instead of text. In Llama's template (see above) that is `{"name": function name, "parameters": {...}}`.
+3. Open WebUI runs the function and sends the result back as a `tool` message, which the template labels `ipython`.
+4. The model writes the final reply from the result.
+
+One chat question therefore became two model calls with a function run in between. The API request from my Java client offers no tools, which is why it answered that it could not know the date.
