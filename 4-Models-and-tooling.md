@@ -340,3 +340,12 @@ This is not hidden reasoning leaking out. It is the model's visible reply. A too
 The chat had been in **Default** function calling, since a new chat starts in the default mode. Switching it to **Legacy** and asking the same question worked: the reply named 4.97.0 and gave three fixes (a spurious Resource Saver error when signing out, slow diagnostics collection when the backend is unresponsive, and reliability of the container exec terminal), described as coming from "the provided context". I did not check them against the page, and which three count as "most important" is the model's choice.
 
 Since a new chat starts in Default mode every time, a model that is weak at tool calling will keep running into this unless the mode is set per model: **Admin Settings** → **Models** → the model's edit page → advanced params → **Function Calling**. That way `llama3.1:8b` can use Legacy while `gpt-oss:20b` uses Native.
+
+## Code execution
+
+The **Integrations** button in a chat offers **Code Interpreter**. In **Admin Settings** → **Code Execution** there are two separate sections, each with an enable switch and an engine choice (**pyodide** or **jupyter (Legacy)**):
+
+- **Code Execution** is for code blocks that appear in a reply, which can be run from the interface.
+- **Code Interpreter** lets the model run code during its answer, see the output and continue, which is the tool-calling loop again.
+
+Both are set to **pyodide**, a Python that runs in the browser as WebAssembly, so the code runs on the laptop in a sandbox, not on the Spark, and cannot see the Spark's files or GPU. The code interpreter template is empty, which means the application's default instructions to the model are used.
