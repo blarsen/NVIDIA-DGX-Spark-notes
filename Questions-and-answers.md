@@ -30,6 +30,9 @@ A repetition loop: once a sentence has been repeated, repeating it is the most l
 **What file format does a model downloaded with Ollama have?**
 GGUF, a single-file format from the llama.cpp project. The `/api/models` output lists `"format":"gguf"` for every model, with the quantization (`Q4_K_M` or `MXFP4`). See [4-Models-and-tooling.md](4-Models-and-tooling.md).
 
+**Is GGUF also used for training, or only for using models?**
+Only for using and distributing them, as far as I know. Training works on full-precision weights in the framework's own checkpoint formats (PyTorch files or safetensors), with gradients and optimizer state that GGUF has no room for. GGUF holds quantized weights, which loses information. The usual route for a fine-tuned model is to train on the original weights, then convert to GGUF with llama.cpp's scripts and quantize.
+
 ## What the model does, and what the application does
 
 **Why does the model say "I'll remember that" when it can't?**
