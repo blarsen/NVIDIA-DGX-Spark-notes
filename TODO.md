@@ -46,6 +46,7 @@ Where the project stands and what could come next. The future items are ordered 
 - [ ] NVIDIA Sync and the DGX Dashboard
 - [ ] Agents and the Model Context Protocol (MCP)
 - [ ] Fine-tuning a model with LoRA from one of NVIDIA's playbooks, and converting the result to GGUF
+- [ ] Test Qwen4 when it is released (due out in a few days): the same Java, Norwegian and tool use tasks as in the survey, with speed and memory
 - [ ] Security and operations: turn off SSH password login, back up the Docker volumes, monitor temperature, power and memory
 - [ ] Clustering two Sparks over the QSFP ports, if a second one ever appears
 
