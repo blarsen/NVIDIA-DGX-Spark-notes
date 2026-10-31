@@ -40,7 +40,7 @@ Where the project stands and what could come next. The future items are ordered 
 - [ ] Structured output (JSON) and a tool-calling loop written by hand in Java
 - [ ] Knowledge bases and embedding models: retrieval over my own notes, and a different embedding model through Ollama
 - [ ] Vision models: ask questions about an image
-- [ ] Image generation on the Spark (ComfyUI, or an NVIDIA playbook if there is one), compared with Draw Things on the Mac using comparable models and settings
+- [ ] Image generation with Draw Things on the Mac in two settings: local models on the Mac, and models running on the Spark, called remotely over an API. Find out what Draw Things can use as a remote server and whether it runs on the Spark
 - [ ] Coding assistants beyond Continue: autocomplete, JetBrains, and agents such as OpenCode
 - [ ] Open WebUI extras: memory, custom tools and functions
 - [ ] Run llama.cpp directly, and compare it with Ollama for speed and features
