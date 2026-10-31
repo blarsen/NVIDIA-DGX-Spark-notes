@@ -43,6 +43,7 @@ Where the project stands and what could come next. The future items are ordered 
 - [ ] Image generation with Draw Things on my Mac Mini in two settings: local models on the Mac Mini, and models running on the Spark, called remotely over an API. Find out what Draw Things can use as a remote server and whether it runs on the Spark
 - [ ] Coding assistants beyond Continue: autocomplete, JetBrains, and agents such as OpenCode
 - [ ] Open WebUI extras: memory, custom tools and functions
+- [ ] Explore alternatives to Open WebUI (for example LibreChat and AnythingLLM): research first, and test hands-on only those that look worthwhile
 - [ ] Run llama.cpp directly, and compare it with Ollama for speed and features
 - [ ] Other inference engines from NVIDIA's playbooks (vLLM, TensorRT-LLM) and a speed comparison
 - [ ] NVIDIA Sync and the DGX Dashboard
