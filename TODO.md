@@ -35,10 +35,12 @@ Where the project stands and what could come next. The future items are ordered 
 - [ ] Steer the 8b model's tool choice with a system prompt in Native mode
 - [ ] Set up system prompts and function calling defaults per model in Open WebUI
 - [ ] Task-based comparison of the models, with a fixed set of tasks (code, summaries, instructions, Norwegian)
+- [ ] Compare the Mac's AI capabilities with the Spark's: Open WebUI and Ollama on both, the same models and prompts, with speed, memory limits and the largest model that runs
 - [ ] Compare quantizations of the same model, such as Q4 and Q8, for quality, speed and size
 - [ ] Structured output (JSON) and a tool-calling loop written by hand in Java
 - [ ] Knowledge bases and embedding models: retrieval over my own notes, and a different embedding model through Ollama
 - [ ] Vision models: ask questions about an image
+- [ ] Image generation on the Spark (ComfyUI, or an NVIDIA playbook if there is one), compared with Draw Things on the Mac using comparable models and settings
 - [ ] Coding assistants beyond Continue: autocomplete, JetBrains, and agents such as OpenCode
 - [ ] Open WebUI extras: memory, custom tools and functions
 - [ ] Run llama.cpp directly, and compare it with Ollama for speed and features
