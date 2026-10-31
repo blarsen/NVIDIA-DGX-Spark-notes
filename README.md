@@ -11,4 +11,4 @@ A log of getting started with an NVIDIA DGX Spark, written by a developer who is
 4. [Models and tooling](4-Models-and-tooling.md): what the models are good for, and the apps and tools that work with them.
 5. [Model survey](5-Model-survey.md): four more models compared on Java, Norwegian and tool use.
 
-Also: [Glossary](Glossary.md), for the LLM terms used in the notes, and [Questions and answers](Questions-and-answers.md), for questions that came up along the way.
+Also: [Glossary](Glossary.md), for the LLM terms used in the notes, [Questions and answers](Questions-and-answers.md), for questions that came up along the way, and a [to-do list](TODO.md).
