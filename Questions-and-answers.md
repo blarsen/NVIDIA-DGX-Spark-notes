@@ -50,5 +50,5 @@ Go's `text/template`. Open WebUI's `{{CURRENT_DATE}}` is a different thing, plai
 **Which Function Calling mode should I use?**
 It depends on the model. In **Native** mode the model chooses tools itself, which `gpt-oss:20b` handles well. Small models do better in **Legacy**, where the application runs a fixed search pipeline. See [4-Models-and-tooling.md](4-Models-and-tooling.md).
 
-**Why does a model with no tool support fail in Native mode?**
-Open WebUI sends tool definitions with every request. A model without the *tools* capability, such as `gemma3:27b`, rejects them with "does not support tools". See [5-Model-survey.md](5-Model-survey.md).
+**Why does a model with no tool support fail in Native mode? Is that in the weights?**
+The "does not support tools" message is an error from Ollama, relayed by Open WebUI, not something the model said, and it came back almost instantly. Ollama keeps capability metadata for each model (`completion`, `tools`, `thinking`; see `/api/models`), and I believe the tools capability is derived from the model's chat template. Training decides how good a model is at tools, while the template and metadata decide whether Ollama allows them. `ollama show <model>` lists the capabilities. See [5-Model-survey.md](5-Model-survey.md).
