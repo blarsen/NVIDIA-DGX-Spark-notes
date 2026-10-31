@@ -33,6 +33,9 @@ GGUF, a single-file format from the llama.cpp project. The `/api/models` output 
 **Is GGUF also used for training, or only for using models?**
 Only for using and distributing them, as far as I know. Training works on full-precision weights in the framework's own checkpoint formats (PyTorch files or safetensors), with gradients and optimizer state that GGUF has no room for. GGUF holds quantized weights, which loses information. The usual route for a fine-tuned model is to train on the original weights, then convert to GGUF with llama.cpp's scripts and quantize.
 
+**What does it mean that a model supports thinking? Is it an interaction between model and application?**
+Mainly it is a property of the model: it has been trained to write out working text before the answer, marked by special tags such as `<think>` and `</think>`. That text is ordinary generated tokens, at the same tokens/s, and it fills the context window. The application's part is to recognise the markers, separate the thinking from the answer, and show it (as "Thought for N seconds"). Ollama's `thinking` capability is, I believe, how it tells the application that a model uses such markers. Without that support the thinking text appears inline in the answer. See [3-Open-WebUI-and-Ollama.md](3-Open-WebUI-and-Ollama.md) and [4-Models-and-tooling.md](4-Models-and-tooling.md).
+
 ## What the model does, and what the application does
 
 **Why does the model say "I'll remember that" when it can't?**
