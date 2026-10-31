@@ -27,6 +27,9 @@ The 120B model is a mixture-of-experts model, which uses only about 5B of its pa
 **Why did the model repeat one sentence forever?**
 A repetition loop: once a sentence has been repeated, repeating it is the most likely continuation. Nothing stops it by default, so set a maximum number of tokens. See [4-Models-and-tooling.md](4-Models-and-tooling.md).
 
+**What file format does a model downloaded with Ollama have?**
+GGUF, a single-file format from the llama.cpp project. The `/api/models` output lists `"format":"gguf"` for every model, with the quantization (`Q4_K_M` or `MXFP4`). See [4-Models-and-tooling.md](4-Models-and-tooling.md).
+
 ## What the model does, and what the application does
 
 **Why does the model say "I'll remember that" when it can't?**

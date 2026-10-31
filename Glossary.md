@@ -42,3 +42,5 @@ Terms I ran into while setting up local LLMs, explained for a developer who know
 
 **Agent.** A model used in a loop: it decides on a step, calls a tool, reads the result and decides the next step, until it can answer.
 
+**GGUF.** The single-file model format used by llama.cpp and Ollama. It holds metadata (architecture, context length, tokenizer) and the weights in a chosen quantization.
+
